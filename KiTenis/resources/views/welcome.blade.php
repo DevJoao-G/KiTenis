@@ -25,9 +25,7 @@
 
 
 
-  <h2 class="text-center my-3 my-xl-5">
-    Busque por Categorias:
-  </h2>
+  <x-Categories />
 
 
 
