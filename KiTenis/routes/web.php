@@ -7,6 +7,6 @@ Route::get('/', function () {
 })->name('welcome');
 
 
-Route::get('/login', function () {
-    return view('auth.login');
-})->name('login');
+Route::get('/account', function () {
+    return view('auth.Account');
+})->name('Account');

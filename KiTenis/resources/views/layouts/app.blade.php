@@ -47,7 +47,7 @@
 
 
           <form class="d-flex ">
-            <a href="{{ route('login') }}" class="text-white fs-4 me-3" title="Entrar">
+            <a href="{{ route('Account') }}" class="text-white fs-4 me-3" title="Entrar">
               <i class="bi bi-person-circle"></i>
             </a>
             <input class="form-control me-2" type="search" placeholder="Procure aqui..." aria-label="Search">
