@@ -24,5 +24,9 @@
     <a href="#" class="text-decoration-none text-muted small">Esqueceu a senha?</a>
   </div>
 
-  <button type="submit" class="btn btn-dark w-100">Entrar</button>
+  <button type="submit" class="btn btn-dark w-100 d-flex align-items-center justify-content-center gap-2">
+    <i class="bi bi-arrow-bar-right fs-5"></i>
+    <span>Entrar</span>
+  </button>
+
 </form>

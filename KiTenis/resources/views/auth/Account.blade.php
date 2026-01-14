@@ -10,12 +10,12 @@
                 <h1 class="text-center mb-2 fw-bold fs-1">Minha Conta</h1>
                 <p class="text-center text-secondary fst-italic">Faça login ou crie uma conta para continuar</p>
                 
-                <div class="btn-group" role="group" aria-label="Escolha entre Login e Cadastro">
+                <div class="btn-group " role="group" aria-label="Escolha entre Login e Cadastro">
                     <button type="button" class="btn btn-secondary active" id="btn-login">
-                        Login
+                        Entrar
                     </button>
                     <button type="button" class="btn btn-light" id="btn-cadastrar">
-                        Cadastrar
+                        Criar Conta
                     </button>
                 </div>
             </div>
