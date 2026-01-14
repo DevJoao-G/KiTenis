@@ -8,4 +8,6 @@
 
  <x-Categories />
 
+ <x-ProductCard />
+
 @endsection
