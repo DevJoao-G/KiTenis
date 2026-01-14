@@ -1,29 +1,35 @@
-
-
-
 <form>
-<div class="mb-3">
-    <label for="exampleInputEmail1" class="form-label">Email</label>
-
+  <div class="mb-3">
+    <label for="registerName" class="form-label">Nome</label>
     <div class="position-relative mb-3">
-      <i class="bi bi-envelope position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
-      <input type="email" class="form-control ps-5" placeholder="Seu@email.com">
+      <i class="bi bi-person position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+      <input type="text" class="form-control ps-5" id="registerName" placeholder="Seu nome completo">
     </div>
   </div>
 
   <div class="mb-3">
-    <label for="exampleInputPassword1" class="form-label">Senha</label>
+    <label for="registerEmail" class="form-label">Email</label>
     <div class="position-relative mb-3">
-      <i class="bi bi-lock position-absolute top-50 start-0 translate-middle-y ms-3 text-muted fs-5"></i>
-      <input type="password" class="form-control ps-5" placeholder="Sua senha">
+      <i class="bi bi-envelope position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+      <input type="email" class="form-control ps-5" id="registerEmail" placeholder="Seu@email.com">
     </div>
+  </div>
 
   <div class="mb-3">
-    <label for="exampleInputPassword1" class="form-label">Confirmar Senha</label>
+    <label for="registerPassword" class="form-label">Senha</label>
     <div class="position-relative mb-3">
       <i class="bi bi-lock position-absolute top-50 start-0 translate-middle-y ms-3 text-muted fs-5"></i>
-      <input type="password" class="form-control ps-5" placeholder="Confirme sua senha">
+      <input type="password" class="form-control ps-5" id="registerPassword" placeholder="Sua senha">
     </div>
+  </div>
 
-  <button class="btn btn-dark w-100">Cadastrar</button>
+  <div class="mb-3">
+    <label for="registerPasswordConfirm" class="form-label">Confirmar Senha</label>
+    <div class="position-relative mb-3">
+      <i class="bi bi-lock position-absolute top-50 start-0 translate-middle-y ms-3 text-muted fs-5"></i>
+      <input type="password" class="form-control ps-5" id="registerPasswordConfirm" placeholder="Confirme sua senha">
+    </div>
+  </div>
+
+  <button type="submit" class="btn btn-dark w-100">Cadastrar</button>
 </form>
