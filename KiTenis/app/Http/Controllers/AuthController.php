@@ -31,6 +31,7 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Conta criada com sucesso',
+            'user' => $user,
         ], 201);
     }
 
@@ -54,6 +55,39 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Login realizado com sucesso',
+            'user' => Auth::user(),
         ]);
+    }
+
+    /* =========================
+       LOGOUT
+    ========================= */
+    public function logout(Request $request)
+    {
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return response()->json([
+            'message' => 'Logout realizado com sucesso'
+        ], 200);
+    }
+
+    /* =========================
+       GET AUTHENTICATED USER
+    ========================= */
+    public function me(Request $request)
+    {
+        try {
+            if (Auth::check()) {
+                return response()->json(Auth::user());
+            }
+
+            return response()->json(['message' => 'Não autenticado'], 401);
+        } catch (\Exception $e) {
+            \Log::error('Erro no método me(): ' . $e->getMessage());
+            return response()->json(['error' => 'Erro ao buscar usuário'], 500);
+        }
     }
 }

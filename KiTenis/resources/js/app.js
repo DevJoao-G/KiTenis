@@ -2,6 +2,7 @@ import './bootstrap';
 import axios from 'axios';
 import './account';
 import './auth';
+import './header';
 import { showToast } from './toast';
 
 // deixa disponível globalmente (opcional mas prático)
