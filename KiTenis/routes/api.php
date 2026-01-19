@@ -7,8 +7,7 @@ use App\Http\Controllers\AuthController;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-// Rotas de autenticação - sem middleware para /me (verifica manualmente)
-Route::get('/me', [AuthController::class, 'me']);
-
-// Logout precisa estar autenticado
-Route::middleware('auth:web')->post('/logout', [AuthController::class, 'logout']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/me', [AuthController::class, 'me']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+});

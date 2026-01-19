@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -14,24 +14,24 @@ class AuthController extends Controller
     ========================= */
     public function register(Request $request)
     {
-        $validated = $request->validate([
+        $data = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:6|confirmed',
         ]);
 
         $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
         ]);
 
-        // 🔥 LOGIN AUTOMÁTICO (SESSION)
-        Auth::login($user);
+        $token = $user->createToken('api-token')->plainTextToken;
 
         return response()->json([
             'message' => 'Conta criada com sucesso',
             'user' => $user,
+            'token' => $token,
         ], 201);
     }
 
@@ -40,22 +40,25 @@ class AuthController extends Controller
     ========================= */
     public function login(Request $request)
     {
-        $credentials = $request->validate([
+        $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
 
-        if (! Auth::attempt($credentials, $request->boolean('remember'))) {
-            return response()->json([
-                'message' => 'Credenciais inválidas',
-            ], 422);
+        $user = User::where('email', $request->email)->first();
+
+        if (! $user || ! Hash::check($request->password, $user->password)) {
+            throw ValidationException::withMessages([
+                'email' => ['Credenciais inválidas.'],
+            ]);
         }
 
-        $request->session()->regenerate();
+        $token = $user->createToken('api-token')->plainTextToken;
 
         return response()->json([
             'message' => 'Login realizado com sucesso',
-            'user' => Auth::user(),
+            'user' => $user,
+            'token' => $token,
         ]);
     }
 
@@ -64,30 +67,18 @@ class AuthController extends Controller
     ========================= */
     public function logout(Request $request)
     {
-        Auth::logout();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        $request->user()->currentAccessToken()->delete();
 
         return response()->json([
-            'message' => 'Logout realizado com sucesso'
-        ], 200);
+            'message' => 'Logout realizado com sucesso',
+        ]);
     }
 
     /* =========================
-       GET AUTHENTICATED USER
+       ME
     ========================= */
     public function me(Request $request)
     {
-        try {
-            if (Auth::check()) {
-                return response()->json(Auth::user());
-            }
-
-            return response()->json(['message' => 'Não autenticado'], 401);
-        } catch (\Exception $e) {
-            \Log::error('Erro no método me(): ' . $e->getMessage());
-            return response()->json(['error' => 'Erro ao buscar usuário'], 500);
-        }
+        return response()->json($request->user());
     }
 }

@@ -1,58 +1,49 @@
 import { showToast, showMultipleToasts } from './toast';
 
-/**
- * Lê cookie por nome
- */
-function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return decodeURIComponent(parts.pop().split(';').shift());
-}
+const API_URL = '/api';
 
-/**
- * Garante CSRF + envia header corretamente
- */
-async function apiRequest(url, data, btn) {
-    const spinner = btn.querySelector('.spinner-border');
-    const text = btn.querySelector('.btn-text');
+async function apiRequest(url, method = 'POST', data = null, btn = null) {
+    let spinner, text;
 
-    btn.disabled = true;
-    spinner.classList.remove('d-none');
-    text.classList.add('d-none');
+    if (btn) {
+        spinner = btn.querySelector('.spinner-border');
+        text = btn.querySelector('.btn-text');
+
+        btn.disabled = true;
+        spinner.classList.remove('d-none');
+        text.classList.add('d-none');
+    }
 
     try {
-        // 1️⃣ Cria cookies CSRF
-        await fetch('/sanctum/csrf-cookie', {
-            credentials: 'same-origin',
-        });
+        const token = localStorage.getItem('token');
 
-        // 2️⃣ Lê token do cookie
-        const csrfToken = getCookie('XSRF-TOKEN');
+        const headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        };
 
-        // 3️⃣ Envia token no header
-        const response = await fetch(url, {
-            method: 'POST',
-            credentials: 'same-origin',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'X-XSRF-TOKEN': csrfToken,
-            },
-            body: JSON.stringify(data),
+        if (token) {
+            headers.Authorization = `Bearer ${token}`;
+        }
+
+        const response = await fetch(`${API_URL}${url}`, {
+            method,
+            headers,
+            body: data ? JSON.stringify(data) : null,
         });
 
         const result = await response.json();
 
-        if (!response.ok) {
-            throw result;
-        }
+        if (!response.ok) throw result;
 
         return result;
 
     } finally {
-        btn.disabled = false;
-        spinner.classList.add('d-none');
-        text.classList.remove('d-none');
+        if (btn) {
+            btn.disabled = false;
+            spinner.classList.add('d-none');
+            text.classList.remove('d-none');
+        }
     }
 }
 
@@ -67,27 +58,12 @@ function clearErrors(form) {
 }
 
 function showErrors(form, errors) {
-    // Marca os campos como inválidos (borda vermelha)
     Object.keys(errors).forEach(field => {
         const input = form.querySelector(`[name="${field}"]`);
-        if (input) {
-            input.classList.add('is-invalid');
-            
-            // Se o erro é no campo password, marca também o password_confirmation
-            if (field === 'password') {
-                const confirmInput = form.querySelector(`[name="password_confirmation"]`);
-                if (confirmInput) {
-                    confirmInput.classList.add('is-invalid');
-                }
-            }
-        }
+        if (input) input.classList.add('is-invalid');
     });
 
-    // Converte os erros em array de mensagens
-    const errorMessages = Object.values(errors).flat();
-    
-    // Exibe um toast para cada erro
-    showMultipleToasts(errorMessages, 'error');
+    showMultipleToasts(Object.values(errors).flat(), 'error');
 }
 
 /* =====================
@@ -104,19 +80,15 @@ document.getElementById('registerForm')?.addEventListener('submit', async e => {
     const btn = document.getElementById('registerBtn');
 
     try {
-        const res = await apiRequest('/api/register', data, btn);
-
+        const res = await apiRequest('/register', 'POST', data, btn);
         localStorage.setItem('token', res.token);
+
         showToast('Conta criada com sucesso!', 'success');
-        
-        // Aguarda 1.5 segundos antes de redirecionar para o usuário ver o toast
-        setTimeout(() => {
-            window.location.href = '/';
-        }, 1500);
+        setTimeout(() => window.location.href = '/', 1500);
 
     } catch (err) {
-        if (err.errors) showErrors(form, err.errors);
-        else showToast(err.message || 'Erro ao cadastrar', 'error');
+        err.errors ? showErrors(form, err.errors)
+                   : showToast(err.message || 'Erro ao cadastrar', 'error');
     }
 });
 
@@ -134,18 +106,14 @@ document.getElementById('loginForm')?.addEventListener('submit', async e => {
     const btn = document.getElementById('loginBtn');
 
     try {
-        const res = await apiRequest('/api/login', data, btn);
-
+        const res = await apiRequest('/login', 'POST', data, btn);
         localStorage.setItem('token', res.token);
+
         showToast('Login realizado com sucesso!', 'success');
-        
-        // Aguarda 1.5 segundos antes de redirecionar para o usuário ver o toast
-        setTimeout(() => {
-            window.location.href = '/';
-        }, 1500);
+        setTimeout(() => window.location.href = '/', 1500);
 
     } catch (err) {
-        if (err.errors) showErrors(form, err.errors);
-        else showToast(err.message || 'Erro ao logar', 'error');
+        err.errors ? showErrors(form, err.errors)
+                   : showToast(err.message || 'Erro ao logar', 'error');
     }
 });
