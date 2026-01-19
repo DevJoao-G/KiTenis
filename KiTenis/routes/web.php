@@ -1,20 +1,48 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Site\HomeController;
+use App\Http\Controllers\Site\ProductController;
+use App\Http\Controllers\Site\CartController;
+use App\Http\Controllers\Account\AccountController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
+// ========================================
+// ROTAS PÚBLICAS
+// ========================================
+
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
+Route::prefix('produtos')->name('products.')->group(function () {
+    Route::get('/', [ProductController::class, 'index'])->name('index');
+    Route::get('/{product}', [ProductController::class, 'show'])->name('show');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// ========================================
+// ROTAS AUTENTICADAS
+// ========================================
 
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    
+    // Carrinho
+    Route::prefix('carrinho')->name('cart.')->group(function () {
+        Route::get('/', [CartController::class, 'index'])->name('index');
+        Route::post('/adicionar', [CartController::class, 'add'])->name('add');
+        Route::delete('/remover/{id}', [CartController::class, 'remove'])->name('remove');
+    });
+    
+    // Conta do Usuário
+    Route::get('/conta', [AccountController::class, 'index'])->name('account');
+    
+    // Pedidos
+    Route::prefix('pedidos')->name('orders.')->group(function () {
+        Route::get('/', [AccountController::class, 'orders'])->name('index');
+        Route::get('/{order}', [AccountController::class, 'showOrder'])->name('show');
+    });
+    
 });
+
+// ========================================
+// ROTAS DE AUTENTICAÇÃO
+// ========================================
 
 require __DIR__.'/auth.php';

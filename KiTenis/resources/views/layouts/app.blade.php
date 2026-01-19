@@ -1,29 +1,40 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee+Shade&display=swap" rel="stylesheet">
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </head>
-   <body class="font-sans antialiased bg-gray-100 min-h-screen">
-    <div id="app">
+    <title>{{ config('app.name', 'KiTenis') }} - @yield('title', 'Loja de Tênis')</title>
 
-        @include('components.navbar')
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
 
-        <main class="py-6">
-            {{ $slot }}
-        </main>
+<body>
+    <!-- Navbar -->
+    <x-navbar />
 
-    </div>
+    <!-- Alerts -->
+    @if (session('success'))
+        <x-alert type="success" :message="session('success')" />
+    @endif
+
+    @if (session('error'))
+        <x-alert type="danger" :message="session('error')" />
+    @endif
+
+    <!-- Main Content -->
+    <main class="py-4">
+        @yield('content')
+    </main>
+
+    <!-- Footer -->
+    <x-footer />
 </body>
 
 </html>

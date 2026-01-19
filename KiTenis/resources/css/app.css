@@ -1,1 +1,8 @@
 @import "bootstrap/dist/css/bootstrap.min.css";
+
+
+
+
+.font-bungee {
+    font-family: 'Bungee Shade', cursive !important;
+}
