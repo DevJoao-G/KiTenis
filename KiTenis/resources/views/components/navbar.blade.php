@@ -141,16 +141,14 @@
 
                     </li>
                 @else
-                    <li class="nav-item">
-                        <a class="btn btn-success btn-sm me-2" href="{{ route('login') }}">
-                            Entrar
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="btn btn-primary btn-sm" href="{{ route('register') }}">
-                            Criar conta
-                        </a>
-                    </li>
+                    @guest
+                        <li class="nav-item ">
+                            <a href="{{ route('access') }}" class="nav-link d-flex  align-items-center">
+                                <i class="bi bi-person-circle fs-4 "></i>
+                                <span class="small ms-2">Entrar</span>
+                            </a>
+                        </li>
+                    @endguest
                 @endauth
             </ul>
         </div>
