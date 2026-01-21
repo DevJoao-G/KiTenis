@@ -6,3 +6,62 @@
 .font-bungee {
     font-family: 'Bungee Shade', cursive !important;
 }
+
+
+/* Dropdown escuro alinhado ao bg-dark do Bootstrap */
+.dropdown-dark {
+    background-color: #212529; /* mesmo tom do bg-dark */
+    border: 1px solid #2b3035;
+}
+
+/* Texto branco */
+.dropdown-dark .dropdown-item,
+.dropdown-dark .dropdown-user-name {
+    color: #f8f9fa;
+}
+
+/* Divider sutil */
+.dropdown-dark .dropdown-divider {
+    border-color: #343a40;
+}
+
+/* Hover success sem perder contraste */
+.dropdown-dark .dropdown-item:hover,
+.dropdown-dark .dropdown-item:focus {
+    background-color: #198754; /* success */
+    color: #fff;
+}
+
+/* Remove efeito estranho do button */
+.dropdown-dark button.dropdown-item {
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+}
+/* Estado normal: verde */
+.dropdown-dark .dropdown-admin {
+    color: #198754; /* success */
+}
+
+/* Hover: fundo verde + texto branco */
+.dropdown-dark .dropdown-admin:hover,
+.dropdown-dark .dropdown-admin:focus {
+    background-color: #198754;
+    color: #fff;
+}
+
+
+/* Ofertas - estado normal */
+.dropdown-dark .dropdown-offer {
+    color: #198754; /* success */
+}
+
+/* Ofertas - hover / focus / active (desktop + mobile) */
+.dropdown-dark .dropdown-offer:hover,
+.dropdown-dark .dropdown-offer:focus,
+.dropdown-dark .dropdown-offer:active {
+    background-color: #198754;
+    color: #fff;
+}
+
