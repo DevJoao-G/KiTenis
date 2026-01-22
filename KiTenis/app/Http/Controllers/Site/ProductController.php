@@ -16,9 +16,9 @@ class ProductController extends Controller
     {
         $query = Product::active()->inStock();
 
-        // Filtro de busca por nome ou descrição
+        // Busca por nome ou descrição
         if ($search = $request->input('search')) {
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('description', 'like', "%{$search}%");
             });
@@ -29,15 +29,14 @@ class ProductController extends Controller
             $query->where('category', $categoria);
         }
 
-        // Filtro de ofertas (produtos abaixo de R$ 400)
+        // Filtro de ofertas
         if ($request->boolean('ofertas')) {
             $query->where('price', '<', 400);
         }
 
-        // Ordenação (padrão: mais recentes)
+        // Ordenação
         $orderBy = $request->input('order_by', 'created_at');
         $orderDirection = $request->input('order_direction', 'desc');
-        
         $query->orderBy($orderBy, $orderDirection);
 
         // Paginação
@@ -51,10 +50,8 @@ class ProductController extends Controller
      */
     public function show(Product $product): View
     {
-        // Verifica se produto está ativo
         abort_if(!$product->active, 404, 'Produto não encontrado');
 
-        // Produtos relacionados (mesma categoria, exceto o atual)
         $relatedProducts = Product::active()
             ->inStock()
             ->where('category', $product->category)
