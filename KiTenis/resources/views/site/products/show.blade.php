@@ -26,10 +26,10 @@
             {{-- Thumbnails (estrutura futura) --}}
             <div class="d-flex gap-2 mt-3">
                 <div class="border rounded p-2 bg-light">
-                    <img src="{{ asset('images/placeholder-product.png') }}" width="60" alt="">
+                    <img src="{{ $product->image_url }}" alt="{{ $product->name }}" width="60" alt="">
                 </div>
                 <div class="border rounded p-2 bg-light opacity-50">
-                    <img src="{{ asset('images/placeholder-product.png') }}" width="60" alt="">
+                    <img src="{{ $product->image_url }}" alt="{{ $product->name }}" width="60" alt="">
                 </div>
             </div>
         </div>
@@ -124,7 +124,7 @@
                 <div class="col-md-3">
                     <div class="card h-100">
                         <img
-                            src="{{ asset('images/placeholder-product.png') }}"
+                            src="{{ $product->image_url }}" alt="{{ $product->name }}"
                             class="card-img-top"
                             alt="{{ $related->name }}"
                         >
