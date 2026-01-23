@@ -119,7 +119,7 @@
                                     <hr class="dropdown-divider">
                                 </li>
                                 <li>
-                                    <a class="dropdown-item fw-bold dropdown-admin" href="{{ route('admin.dashboard') }}">
+                                    <a class="dropdown-item fw-bold dropdown-admin" href="{{ route('filament.admin.pages.dashboard') }}">
                                         Painel Admin
                                     </a>
                                 </li>

@@ -16,7 +16,7 @@
         <div class="col-lg-6">
             <div class="border rounded-4 p-4 bg-light text-center">
                 <img
-                    src="{{ asset('images/placeholder-product.png') }}"
+                    src="{{ $product->image_url }}" alt="{{ $product->name }}"
                     alt="{{ $product->name }}"
                     class="img-fluid rounded"
                     style="max-height: 420px; object-fit: contain;"

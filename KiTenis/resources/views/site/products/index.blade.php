@@ -15,7 +15,7 @@
 
                             {{-- Imagem --}}
                          <img
-    src="{{ asset('images/placeholder-product.png') }}"
+    src="{{ $product->image_url }}" alt="{{ $product->name }}"
     class="card-img-top"
     alt="Placeholder"
 >
