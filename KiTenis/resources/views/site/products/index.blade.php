@@ -3,7 +3,7 @@
 @section('content')
     <div class="container py-4">
 
-        <h1 class="mb-4 fw-bold">
+        <h1 class="mt-4 mb-4 fw-bold">
             Produtos
         </h1>
 
