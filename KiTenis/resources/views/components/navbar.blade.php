@@ -1,4 +1,5 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+{{-- resources/views/components/navbar.blade.php --}}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow">
     <div class="container-fluid">
         <!-- Logo -->
         <a class="navbar-brand font-bungee" href="{{ route('home') }}">
@@ -34,19 +35,19 @@
 
                     <ul class="dropdown-menu dropdown-dark">
                         <li>
-                            <a class="dropdown-item" href="#">
+                            <a class="dropdown-item" href="{{ route('products.index', ['categoria' => 'masculino']) }}">
                                 Masculino
                             </a>
                         </li>
 
                         <li>
-                            <a class="dropdown-item" href="#">
+                            <a class="dropdown-item" href="{{ route('products.index', ['categoria' => 'feminino']) }}">
                                 Feminino
                             </a>
                         </li>
 
                         <li>
-                            <a class="dropdown-item" href="#">
+                            <a class="dropdown-item" href="{{ route('products.index', ['categoria' => 'infantil']) }}">
                                 Infantil
                             </a>
                         </li>
@@ -55,21 +56,21 @@
                             <hr class="dropdown-divider">
                         </li>
                         <li>
-                            <a class="dropdown-item fw-bold dropdown-offer" href="#">
+                            <a class="dropdown-item fw-bold dropdown-offer" href="{{ route('products.index', ['ofertas' => true]) }}">
                                 Ofertas
                             </a>
                         </li>
                     </ul>
                 </li>
-
             </ul>
 
             <!-- Busca -->
             <form class="d-flex me-3" method="GET" action="{{ route('products.index') }}">
                 <input class="form-control form-control-sm me-2" type="search" name="search"
                     placeholder="Buscar produto ou marca" value="{{ request('search') }}" style="min-width: 190px;">
-                <button class="btn btn-success" type="submit">
-                    Buscar
+                <button class="btn btn-success btn-sm" type="submit">
+                    <i class="bi bi-search"></i>
+                    <span class="d-none d-md-inline ms-1">Buscar</span>
                 </button>
             </form>
 
@@ -78,17 +79,17 @@
                 @auth
                     <!-- Carrinho -->
                     <li class="nav-item">
-                        <a class="nav-link d-inline-flex align-items-center" href="#">
+                        <a class="nav-link position-relative d-inline-flex align-items-center" href="#">
                             <i class="bi bi-handbag fs-5"></i>
-
-                            <span class="badge rounded-pill bg-success ms-1 d-none d-lg-inline">
+                            <span class="position-absolute top-0 start-100 translate-middle badge d-none d-lg-inline rounded-pill bg-success">
                                 0
+                                <span class="visually-hidden">itens no carrinho</span>
                             </span>
                         </a>
                     </li>
 
                     <!-- Usuário -->
-                    <li class="nav-item dropdown ">
+                    <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                             <i class="bi bi-person-circle fs-5"></i>
                         </a>
@@ -104,13 +105,13 @@
 
                             <li>
                                 <a class="dropdown-item" href="{{ route('account') }}">
-                                    Minha Conta
+                                    <i class="bi bi-person me-2"></i>Minha Conta
                                 </a>
                             </li>
 
                             <li>
                                 <a class="dropdown-item" href="{{ route('orders.index') }}">
-                                    Meus Pedidos
+                                    <i class="bi bi-bag-check me-2"></i>Meus Pedidos
                                 </a>
                             </li>
 
@@ -120,7 +121,7 @@
                                 </li>
                                 <li>
                                     <a class="dropdown-item fw-bold dropdown-admin" href="{{ route('filament.admin.pages.dashboard') }}">
-                                        Painel Admin
+                                        <i class="bi bi-shield-lock me-2"></i>Painel Admin
                                     </a>
                                 </li>
                             @endif
@@ -133,18 +134,17 @@
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
                                     <button type="submit" class="dropdown-item">
-                                        Sair
+                                        <i class="bi bi-box-arrow-right me-2"></i>Sair
                                     </button>
                                 </form>
                             </li>
                         </ul>
-
                     </li>
                 @else
                     @guest
-                        <li class="nav-item ">
-                            <a href="{{ route('access') }}" class="nav-link d-flex  align-items-center">
-                                <i class="bi bi-person-circle fs-4 "></i>
+                        <li class="nav-item">
+                            <a href="{{ route('access') }}" class="nav-link d-flex align-items-center">
+                                <i class="bi bi-person-circle fs-4"></i>
                                 <span class="small ms-2">Entrar</span>
                             </a>
                         </li>
