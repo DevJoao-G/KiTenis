@@ -3,6 +3,7 @@
 use App\Http\Controllers\Site\HomeController;
 use App\Http\Controllers\Site\ProductController;
 use App\Http\Controllers\Site\CartController;
+use App\Http\Controllers\Site\NewsletterController;
 use App\Http\Controllers\Account\AccountController;
 use Illuminate\Support\Facades\Route;
 
@@ -17,6 +18,9 @@ Route::prefix('produtos')->name('products.')->group(function () {
     Route::get('/{product}', [ProductController::class, 'show'])->name('show');
 });
 
+// Newsletter
+Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])
+    ->name('newsletter.subscribe');
 // ========================================
 // ROTAS AUTENTICADAS
 // ========================================

@@ -3,61 +3,54 @@
 
 
 
+/* Adicionar ao resources/css/app.css existente */
+
+/* Font Bungee melhorada */
 .font-bungee {
     font-family: 'Bungee Shade', cursive !important;
+    letter-spacing: 1px;
 }
 
-
-/* Dropdown escuro alinhado ao bg-dark do Bootstrap */
+/* Dropdown escuro melhorado */
 .dropdown-dark {
-    background-color: #212529; /* mesmo tom do bg-dark */
+    background-color: #212529;
     border: 1px solid #2b3035;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.3);
 }
 
-/* Texto branco */
 .dropdown-dark .dropdown-item,
 .dropdown-dark .dropdown-user-name {
     color: #f8f9fa;
+    transition: all 0.3s ease;
 }
 
-/* Divider sutil */
 .dropdown-dark .dropdown-divider {
     border-color: #343a40;
 }
 
-/* Hover success sem perder contraste */
 .dropdown-dark .dropdown-item:hover,
 .dropdown-dark .dropdown-item:focus {
-    background-color: #198754; /* success */
+    background-color: #198754;
     color: #fff;
+    transform: translateX(5px);
 }
 
-/* Remove efeito estranho do button */
 .dropdown-dark button.dropdown-item {
     background: none;
     border: none;
     width: 100%;
     text-align: left;
 }
-/* Estado normal: verde */
-.dropdown-dark .dropdown-admin {
-    color: #198754; /* success */
-}
 
-/* Hover: fundo verde + texto branco */
-.dropdown-dark .dropdown-admin:hover,
-.dropdown-dark .dropdown-admin:focus {
-    background-color: #198754;
-    color: #fff;
-}
-
-
-/* Ofertas - estado normal */
+/* Admin e Ofertas */
+.dropdown-dark .dropdown-admin,
 .dropdown-dark .dropdown-offer {
-    color: #198754; /* success */
+    color: #198754;
 }
 
-/* Ofertas - hover / focus / active (desktop + mobile) */
+.dropdown-dark .dropdown-admin:hover,
+.dropdown-dark .dropdown-admin:focus,
+.dropdown-dark .dropdown-admin:active,
 .dropdown-dark .dropdown-offer:hover,
 .dropdown-dark .dropdown-offer:focus,
 .dropdown-dark .dropdown-offer:active {
@@ -65,3 +58,21 @@
     color: #fff;
 }
 
+/* Badge do carrinho com animação */
+.nav-link .badge {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+/* Navbar shadow suave */
+.navbar.shadow {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
+}
