@@ -40,9 +40,11 @@ class ProductController extends Controller
         $query->orderBy($orderBy, $orderDirection);
 
         // Paginação
-        $products = $query->paginate(12)->withQueryString();
+       $products = $query->paginate(12)
+    ->onEachSide(1)
+    ->withQueryString();
 
-        return view('site.products.index', compact('products'));
+return view('site.products.index', compact('products'));
     }
 
     /**

@@ -52,9 +52,8 @@
             </div>
 
             {{-- Paginação --}}
-            <div class="mt-4">
-                {{ $products->links() }}
-            </div>
+            <x-pagination :paginator="$products" />
+
         @else
             <div class="alert alert-warning">
                 Nenhum produto encontrado.
