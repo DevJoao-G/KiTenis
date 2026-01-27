@@ -4,7 +4,7 @@
 
 @section('content')
 
-    {{-- CAROUSEL DE OFERTAS --}}
+    {{-- OFERTAS (MARQUEE INFINITO – alinhado em linha, sem sobrepor) --}}
     <section class="bg-light py-5" data-aos="fade-up" data-aos-duration="1000">
         <div class="container">
             <div class="text-center mb-4">
@@ -12,109 +12,138 @@
                 <p class="text-secondary">Os melhores tênis com até 42% de desconto!</p>
             </div>
 
-            <div id="carouselOfertas" class="carousel slide position-relative" data-bs-ride="carousel">
+            @php
+                $count = max(1, $ofertas->count());
+                // 10 itens -> ~30s fica suave
+                $duration = max(24, $count * 3); // segundos
+            @endphp
 
-                {{-- Indicadores --}}
-                <div class="carousel-indicators">
-                    @foreach ($ofertas->chunk(3) as $index => $chunk)
-                        <button type="button" data-bs-target="#carouselOfertas" data-bs-slide-to="{{ $index }}"
-                            class="{{ $index === 0 ? 'active' : '' }}" aria-current="{{ $index === 0 ? 'true' : 'false' }}"
-                            aria-label="Slide {{ $index + 1 }}">
-                        </button>
-                    @endforeach
-                </div>
+            <div class="ofertas-marquee" style="--duration: {{ $duration }}s;">
+                <div class="ofertas-track">
 
-                {{-- Slides --}}
-                <div class="carousel-inner">
-                    @foreach ($ofertas->chunk(3) as $index => $chunk)
-                        <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
-                            <div class="row g-4 px-5">
-                                @foreach ($chunk as $produto)
-                                    <div class="col-md-4">
-                                        <div class="card h-100 shadow-sm border-0 position-relative" data-aos="zoom-in-up"
-                                            data-aos-duration="800">
+                    {{-- Set 1 --}}
+                    @foreach ($ofertas as $produto)
+                        <div class="oferta-slide">
+                            <div class="card h-100 shadow-sm border-0 position-relative oferta-card">
+                                @php $desconto = round((1 - $produto->price / 600) * 100); @endphp
 
-                                            {{-- Badge de Desconto --}}
-                                            @php
-                                                $desconto = round((1 - $produto->price / 600) * 100);
-                                            @endphp
-                                            <div class="position-absolute top-0 start-0 m-3" style="z-index: 10;">
-                                                <span class="badge bg-success fs-6">
-                                                    -{{ $desconto }}% OFF
-                                                </span>
-                                            </div>
+                                <div class="position-absolute top-0 start-0 m-2" style="z-index: 10;">
+                                    <span class="badge bg-danger fw-semibold">-{{ $desconto }}%</span>
+                                </div>
 
-                                            {{-- Botão Favoritar --}}
-                                            <button
-                                                class="btn-favoritar position-absolute top-0 end-0 m-3 bg-white rounded-circle border-0 shadow-sm"
-                                                data-produto-id="{{ $produto->id }}"
-                                                style="width: 40px; height: 40px; z-index: 10;">
-                                                <i class="bi bi-heart fs-5 text-danger"></i>
-                                            </button>
+                                <button
+                                    class="btn-favoritar position-absolute top-0 end-0 m-2 bg-white rounded-circle border-0 shadow-sm"
+                                    data-produto-id="{{ $produto->id }}" style="width: 38px; height: 38px; z-index: 10;"
+                                    aria-label="Favoritar {{ $produto->name }}" title="Favoritar produto">
+                                    <i class="bi bi-heart fs-5"></i>
+                                </button>
 
-                                            {{-- Imagem --}}
-                                            <img src="{{ $produto->image_url }}" class="card-img-top p-4"
-                                                alt="{{ $produto->name }}" style="height: 250px; object-fit: contain;">
+                                <div class="d-flex align-items-center justify-content-center oferta-img">
+                                    <img src="{{ $produto->image_url }}" class="img-fluid p-3" alt="{{ $produto->name }}"
+                                        loading="lazy" style="max-height: 190px; object-fit: contain;">
+                                </div>
 
-                                            <div class="card-body d-flex flex-column">
-                                                {{-- Avaliação --}}
-                                                <div class="mb-2">
-                                                    <span class="text-warning">★★★★★</span>
-                                                </div>
-
-                                                {{-- Nome --}}
-                                                <h6 class="card-title fw-semibold mb-2">
-                                                    {{ $produto->name }}
-                                                </h6>
-
-                                                {{-- Preços --}}
-                                                <div class="mb-3">
-                                                    <small class="text-muted text-decoration-line-through">
-                                                        R$ 599,90
-                                                    </small>
-                                                    <div class="fs-4 fw-bold text-success">
-                                                        R$ {{ number_format($produto->price, 2, ',', '.') }}
-                                                    </div>
-                                                    <small class="text-muted">
-                                                        ou 4x de R$ {{ number_format($produto->price / 4, 2, ',', '.') }}
-                                                    </small>
-                                                </div>
-
-                                                {{-- Botões --}}
-                                                <div class="mt-auto">
-                                                    <a href="{{ route('products.show', $produto->id) }}"
-                                                        class="btn btn-outline-success w-100 mb-2">
-                                                        Ver detalhes
-                                                    </a>
-
-                                                    @if ($produto->stock > 0)
-                                                        <small class="text-success d-block text-center">
-                                                            <i class="bi bi-check-circle"></i>
-                                                            Frete grátis em 3 dias úteis
-                                                        </small>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                        </div>
+                                <div class="card-body d-flex flex-column pt-2">
+                                    <div class="mb-1" role="img" aria-label="Avaliação 5 estrelas">
+                                        <span class="text-warning small">★★★★★</span>
                                     </div>
-                                @endforeach
+
+                                    <h6 class="fw-semibold mb-2 oferta-title">
+                                        {{ $produto->name }}
+                                    </h6>
+
+                                    <div class="mb-3">
+                                        <small class="text-muted text-decoration-line-through">R$ 599,90</small>
+                                        <div class="h5 fw-bold text-success mb-0">
+                                            R$ {{ number_format($produto->price, 2, ',', '.') }}
+                                        </div>
+                                        <small class="text-muted">
+                                            4x de R$ {{ number_format($produto->price / 4, 2, ',', '.') }}
+                                        </small>
+                                    </div>
+
+                                    <div class="mt-auto">
+                                        <a href="{{ route('products.show', $produto->id) }}"
+                                            class="btn btn-success w-100 fw-semibold">
+                                            Ver detalhes
+                                        </a>
+
+                                        @if ($produto->stock > 0)
+                                            <small
+                                                class="text-success d-flex align-items-center justify-content-center gap-1 mt-2">
+                                                <i class="bi bi-check-circle-fill"></i>
+                                                <span>Frete grátis</span>
+                                            </small>
+                                        @endif
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     @endforeach
-                </div>
 
-                {{-- Controles --}}
-                <button class="carousel-control-prev" type="button" data-bs-target="#carouselOfertas" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Anterior</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#carouselOfertas" data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Próximo</span>
-                </button>
+                    {{-- Set 2 (duplicado para loop perfeito “tela a tela”) --}}
+                    @foreach ($ofertas as $produto)
+                        <div class="oferta-slide" aria-hidden="true">
+                            <div class="card h-100 shadow-sm border-0 position-relative oferta-card">
+                                @php $desconto = round((1 - $produto->price / 600) * 100); @endphp
+
+                                <div class="position-absolute top-0 start-0 m-2" style="z-index: 10;">
+                                    <span class="badge bg-danger fw-semibold">-{{ $desconto }}%</span>
+                                </div>
+
+                                <button
+                                    class="btn-favoritar position-absolute top-0 end-0 m-2 bg-white rounded-circle border-0 shadow-sm"
+                                    data-produto-id="{{ $produto->id }}" style="width: 38px; height: 38px; z-index: 10;"
+                                    aria-label="Favoritar {{ $produto->name }}" title="Favoritar produto">
+                                    <i class="bi bi-heart fs-5"></i>
+                                </button>
+
+                                <div class="d-flex align-items-center justify-content-center oferta-img">
+                                    <img src="{{ $produto->image_url }}" class="img-fluid p-3" alt="{{ $produto->name }}"
+                                        loading="lazy" style="max-height: 190px; object-fit: contain;">
+                                </div>
+
+                                <div class="card-body d-flex flex-column pt-2">
+                                    <div class="mb-1" role="img" aria-label="Avaliação 5 estrelas">
+                                        <span class="text-warning small">★★★★★</span>
+                                    </div>
+
+                                    <h6 class="fw-semibold mb-2 oferta-title">
+                                        {{ $produto->name }}
+                                    </h6>
+
+                                    <div class="mb-3">
+                                        <small class="text-muted text-decoration-line-through">R$ 599,90</small>
+                                        <div class="h5 fw-bold text-success mb-0">
+                                            R$ {{ number_format($produto->price, 2, ',', '.') }}
+                                        </div>
+                                        <small class="text-muted">
+                                            4x de R$ {{ number_format($produto->price / 4, 2, ',', '.') }}
+                                        </small>
+                                    </div>
+
+                                    <div class="mt-auto">
+                                        <a href="{{ route('products.show', $produto->id) }}"
+                                            class="btn btn-success w-100 fw-semibold">
+                                            Ver detalhes
+                                        </a>
+
+                                        @if ($produto->stock > 0)
+                                            <small
+                                                class="text-success d-flex align-items-center justify-content-center gap-1 mt-2">
+                                                <i class="bi bi-check-circle-fill"></i>
+                                                <span>Frete grátis</span>
+                                            </small>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+
+                </div>
             </div>
 
-            {{-- Link Ver Todas --}}
             <div class="text-center mt-4">
                 <a href="{{ route('products.index', ['ofertas' => true]) }}" class="btn btn-success btn-lg px-5">
                     Ver todas as ofertas
@@ -123,6 +152,7 @@
             </div>
         </div>
     </section>
+
 
     {{-- NAVEGUE POR MARCAS --}}
     <section class="py-5 bg-white" data-aos="fade-up" data-aos-duration="1000">
@@ -136,18 +166,14 @@
                             class="card h-100 text-decoration-none border hover-shadow" data-aos="flip-up"
                             data-aos-delay="100" data-aos-duration="1000">
                             <div class="card-body d-flex align-items-center justify-content-center p-4">
-                                {{-- Se tiver campo logo no banco (ex.: $marca->logo), use ele. --}}
-                                {{-- Caso não tenha, mostramos apenas o nome da marca. --}}
-
                                 @if (!empty($marca->logo_path))
                                     <img src="{{ asset('storage/' . $marca->logo_path) }}" alt="{{ $marca->name }}"
                                         class="img-fluid" style="max-height: 60px; filter: grayscale(100%);"
                                         onmouseover="this.style.filter='grayscale(0%)'"
-                                        onmouseout="this.style.filter='grayscale(100%)'">
+                                        onmouseout="this.style.filter='grayscale(100%)'" loading="lazy">
                                 @else
                                     <span class="fw-semibold text-dark">{{ $marca->name }}</span>
                                 @endif
-
                             </div>
                         </a>
                     </div>
@@ -159,7 +185,6 @@
             </div>
         </div>
     </section>
-
 
     {{-- NEWSLETTER --}}
     <section class="py-5 bg-white">
@@ -203,6 +228,7 @@
 
 @push('styles')
     <style>
+        /* ====== Marcas (cards) ====== */
         .hover-shadow {
             transition: all 0.3s ease;
         }
@@ -212,38 +238,91 @@
             transform: translateY(-2px);
         }
 
-        /* Controles do carousel com fundo escuro e visíveis */
-        .carousel-control-prev-icon,
-        .carousel-control-next-icon {
-            width: 3rem;
-            height: 3rem;
-            background-color: rgba(0, 0, 0, 0.7);
-            border-radius: 50%;
-            background-size: 50%;
+        /* ====== OFERTAS – Marquee “tela a tela” (SEM sobrepor) ======
+               Usa: .ofertas-marquee > .ofertas-track > .oferta-slide
+               (Set duplicado no HTML para loop perfeito)
+            */
+        .ofertas-marquee {
+            overflow: hidden;
+            -webkit-mask-image: linear-gradient(to right, transparent, #000 3% 97%, transparent);
+            mask-image: linear-gradient(to right, transparent, #000 3% 97%, transparent);
         }
 
-        .carousel-control-prev,
-        .carousel-control-next {
-            width: 5%;
-            opacity: 1;
+
+        .ofertas-track {
+            --start: 60px;
+            display: flex;
+            flex-wrap: nowrap;
+            align-items: stretch;
+            gap: 1rem;
+            width: max-content;
+            will-change: transform;
+            animation: ofertasMarquee var(--duration, 30s) linear infinite;
         }
 
-        .carousel-control-prev:hover .carousel-control-prev-icon,
-        .carousel-control-next:hover .carousel-control-next-icon {
-            background-color: rgba(0, 0, 0, 0.9);
+        /* Pausa no hover (UX) */
+        .ofertas-marquee:hover .ofertas-track {
+            animation-play-state: paused;
         }
 
-        /* Botão favoritar */
+        /* Cada card ocupa um “slot” fixo */
+        .oferta-slide {
+            flex: 0 0 auto;
+            width: 280px;
+            /* ajuste aqui se quiser mais compacto */
+        }
+
+        /* Loop perfeito: anda metade do track (porque duplicamos Set1 + Set2) */
+        @keyframes ofertasMarquee {
+            from {
+                transform: translateX(calc(-1 * var(--start)));
+            }
+
+            to {
+                transform: translateX(calc(-50% - var(--start)));
+            }
+
+        }
+
+        /* Card mais “vitrine” */
+        .oferta-card {
+            border-radius: 14px;
+            overflow: hidden;
+            transition: transform .18s ease, box-shadow .18s ease;
+        }
+
+        .oferta-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 28px rgba(0, 0, 0, .12) !important;
+        }
+
+        /* Topo com imagem */
+        .oferta-img {
+            height: 210px;
+            background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
+        }
+
+        /* Título (2 linhas) */
+        .oferta-title {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            min-height: 40px;
+        }
+
+        /* Favoritar */
         .btn-favoritar {
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 0;
         }
 
         .btn-favoritar:hover {
-            transform: scale(1.1);
+            transform: scale(1.08);
         }
 
         .btn-favoritar.favoritado i {
@@ -256,10 +335,34 @@
 
         .btn-favoritar.favoritado i::before {
             content: "\f588";
-            /* ícone de coração preenchido */
+        }
+
+        /* Responsivo: cards menores no mobile */
+        @media (max-width: 575.98px) {
+            .oferta-slide {
+                width: 240px;
+            }
+
+            .oferta-img {
+                height: 200px;
+            }
+        }
+
+        /* Acessibilidade: reduz movimento */
+        @media (prefers-reduced-motion: reduce) {
+            .ofertas-track {
+                animation: none;
+            }
+
+            .ofertas-marquee {
+                -webkit-mask-image: none;
+                mask-image: none;
+                overflow-x: auto;
+            }
         }
     </style>
 @endpush
+
 
 @push('scripts')
     <!-- AOS Library -->
@@ -268,6 +371,7 @@
     <script>
         AOS.init();
     </script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Funcionalidade do botão favoritar
@@ -282,7 +386,6 @@
                     this.classList.toggle('favoritado');
 
                     // Aqui você pode adicionar a lógica para salvar no backend
-                    // Por exemplo, fazer uma requisição AJAX
                     console.log('Produto ' + produtoId + ' favoritado: ' + this.classList.contains(
                         'favoritado'));
                 });

@@ -15,6 +15,9 @@
     <title>{{ config('app.name', 'KiTenis') }} - @yield('title', 'Loja de Tênis')</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    {{-- ✅ Para estilos injetados pelas views --}}
+    @stack('styles')
 </head>
 
 <body>
@@ -37,6 +40,9 @@
 
     <!-- Footer -->
     <x-footer />
+
+    {{-- ✅ Para scripts injetados pelas views --}}
+    @stack('scripts')
 </body>
 
 </html>
