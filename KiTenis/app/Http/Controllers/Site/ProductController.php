@@ -10,14 +10,16 @@ use Illuminate\View\View;
 class ProductController extends Controller
 {
     /**
-     * Exibe lista de produtos com busca e filtros
+     * Lista de produtos
      */
     public function index(Request $request): View
     {
-        $query = Product::active()->inStock();
+        $query = Product::query()
+            ->active()
+            ->inStock();
 
         // Busca por nome ou descrição
-        if ($search = $request->input('search')) {
+        if ($search = $request->string('search')->trim()->toString()) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('description', 'like', "%{$search}%");
@@ -25,7 +27,7 @@ class ProductController extends Controller
         }
 
         // Filtro por categoria
-        if ($categoria = $request->input('categoria')) {
+        if ($categoria = $request->string('categoria')->toString()) {
             $query->where('category', $categoria);
         }
 
@@ -34,33 +36,51 @@ class ProductController extends Controller
             $query->where('price', '<', 400);
         }
 
-        // Ordenação
+        // Ordenação segura
+        $allowedOrderBy = ['created_at', 'price', 'name'];
         $orderBy = $request->input('order_by', 'created_at');
-        $orderDirection = $request->input('order_direction', 'desc');
+
+        if (!in_array($orderBy, $allowedOrderBy)) {
+            $orderBy = 'created_at';
+        }
+
+        $orderDirection = $request->input('order_direction', 'desc') === 'asc'
+            ? 'asc'
+            : 'desc';
+
         $query->orderBy($orderBy, $orderDirection);
 
-        // Paginação
-       $products = $query->paginate(12)
-    ->onEachSide(1)
-    ->withQueryString();
+        // Paginação padronizada
+        $products = $query
+            ->paginate(12)
+            ->onEachSide(1)
+            ->withQueryString();
 
-return view('site.products.index', compact('products'));
+        return view('site.products.index', [
+            'products' => $products,
+        ]);
     }
 
     /**
-     * Exibe detalhes de um produto
+     * Detalhe do produto
      */
     public function show(Product $product): View
     {
-        abort_if(!$product->active, 404, 'Produto não encontrado');
+        if (!$product->active) {
+            abort(404);
+        }
 
-        $relatedProducts = Product::active()
+        $relatedProducts = Product::query()
+            ->active()
             ->inStock()
             ->where('category', $product->category)
-            ->where('id', '!=', $product->id)
+            ->whereKeyNot($product->id)
             ->limit(4)
             ->get();
 
-        return view('site.products.show', compact('product', 'relatedProducts'));
+        return view('site.products.show', [
+            'product'         => $product,
+            'relatedProducts' => $relatedProducts,
+        ]);
     }
 }

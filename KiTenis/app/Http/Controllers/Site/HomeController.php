@@ -9,19 +9,20 @@ use Illuminate\View\View;
 class HomeController extends Controller
 {
     /**
-     * Exibe a página inicial com ofertas e marcas
+     * Página inicial
      */
     public function index(): View
     {
-        // Busca produtos em oferta (preço < 400)
-        $ofertas = Product::active()
+        // Produtos em oferta (ex: até R$ 400)
+        $ofertas = Product::query()
+            ->active()
             ->inStock()
             ->where('price', '<', 400)
-            ->orderBy('price', 'asc')
+            ->orderBy('price')
             ->limit(6)
             ->get();
 
-        // Marcas disponíveis (baseado nas imagens)
+        // Marcas mockadas (UI)
         $marcas = [
             ['nome' => 'Adidas', 'logo' => 'adidas-logo.svg'],
             ['nome' => 'Nike', 'logo' => 'nike-logo.svg'],
@@ -31,6 +32,9 @@ class HomeController extends Controller
             ['nome' => 'Puma', 'logo' => 'puma-logo.svg'],
         ];
 
-        return view('site.home', compact('ofertas', 'marcas'));
+        return view('site.home', [
+            'ofertas' => $ofertas,
+            'marcas'  => $marcas,
+        ]);
     }
 }

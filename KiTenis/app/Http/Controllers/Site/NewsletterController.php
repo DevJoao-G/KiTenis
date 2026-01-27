@@ -10,22 +10,28 @@ use Illuminate\Http\Request;
 class NewsletterController extends Controller
 {
     /**
-     * Cadastra novo email na newsletter
+     * Cadastro na newsletter
      */
     public function subscribe(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:newsletters,email',
+            'name'  => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:newsletters,email'],
         ], [
-            'name.required' => 'Por favor, informe seu nome.',
+            'name.required'  => 'Por favor, informe seu nome.',
             'email.required' => 'Por favor, informe seu e-mail.',
-            'email.email' => 'Por favor, informe um e-mail válido.',
-            'email.unique' => 'Este e-mail já está cadastrado em nossa newsletter.',
+            'email.email'    => 'Informe um e-mail válido.',
+            'email.unique'   => 'Este e-mail já está cadastrado.',
         ]);
 
-        Newsletter::create($validated);
+        Newsletter::create([
+            'name'  => $validated['name'],
+            'email' => strtolower($validated['email']),
+        ]);
 
-        return back()->with('success', 'Cadastro realizado com sucesso! Você receberá nossas ofertas exclusivas.');
+        return back()->with(
+            'success',
+            'Cadastro realizado com sucesso! Você receberá nossas ofertas exclusivas.'
+        );
     }
 }
