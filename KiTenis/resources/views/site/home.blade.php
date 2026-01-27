@@ -144,12 +144,12 @@
                 </div>
             </div>
 
-            <div class="text-center mt-4">
+            {{-- <div class="text-center mt-4">
                 <a href="{{ route('products.index', ['ofertas' => true]) }}" class="btn btn-success btn-lg px-5">
                     Ver todas as ofertas
                     <i class="bi bi-arrow-right ms-2"></i>
                 </a>
-            </div>
+            </div> --}}
         </div>
     </section>
 
