@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Site;
 
 use App\Http\Controllers\Controller;
+use App\Models\Brand;
 use App\Models\Product;
 use Illuminate\View\View;
 
@@ -22,15 +23,11 @@ class HomeController extends Controller
             ->limit(6)
             ->get();
 
-        // Marcas mockadas (UI)
-        $marcas = [
-            ['nome' => 'Adidas', 'logo' => 'adidas-logo.svg'],
-            ['nome' => 'Nike', 'logo' => 'nike-logo.svg'],
-            ['nome' => 'Mizuno', 'logo' => 'mizuno-logo.svg'],
-            ['nome' => 'Vans', 'logo' => 'vans-logo.svg'],
-            ['nome' => 'Asics', 'logo' => 'asics-logo.svg'],
-            ['nome' => 'Puma', 'logo' => 'puma-logo.svg'],
-        ];
+        // Marcas (somente ativas)
+        $marcas = Brand::query()
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
 
         return view('site.home', [
             'ofertas' => $ofertas,
