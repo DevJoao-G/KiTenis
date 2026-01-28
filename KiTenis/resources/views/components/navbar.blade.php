@@ -77,16 +77,25 @@
             <ul class="navbar-nav">
                 @auth
                     <!-- Carrinho -->
+                    @php
+                        $favoriteCount = Auth::user()->favoriteProducts()->count();
+                    @endphp
+
                     <li class="nav-item">
-                        <a class="nav-link position-relative d-inline-flex align-items-center" href="#">
+                        <a class="nav-link position-relative d-inline-flex align-items-center"
+                            href="{{ route('cart.index') }}">
                             <i class="bi bi-handbag fs-5"></i>
-                            <span
-                                class="position-absolute top-0 start-100 translate-middle badge d-none d-lg-inline rounded-pill bg-success">
-                                0
-                                <span class="visually-hidden">itens no carrinho</span>
-                            </span>
+
+                            @if($favoriteCount > 0)
+                                <span
+                                    class="position-absolute top-0 start-100 translate-middle badge d-none d-lg-inline rounded-pill bg-success">
+                                    {{ $favoriteCount }}
+                                    <span class="visually-hidden">itens no carrinho</span>
+                                </span>
+                            @endif
                         </a>
                     </li>
+                    >
 
                     <!-- Usuário -->
                     <li class="nav-item dropdown">
