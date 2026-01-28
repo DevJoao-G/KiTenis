@@ -9,12 +9,8 @@ use Illuminate\View\View;
 
 class HomeController extends Controller
 {
-    /**
-     * Página inicial
-     */
     public function index(): View
     {
-        // Apenas promoções ativas e marcadas para o carousel
         $ofertas = Product::query()
             ->active()
             ->inStock()
@@ -24,15 +20,25 @@ class HomeController extends Controller
             ->limit(12)
             ->get();
 
-        // Marcas (somente ativas)
         $marcas = Brand::query()
             ->where('is_active', true)
             ->orderBy('name')
             ->get();
 
+        // ✅ IDs favoritados (somente para os produtos exibidos)
+        $favoriteIds = [];
+        if (auth()->check() && $ofertas->isNotEmpty()) {
+            $favoriteIds = auth()->user()
+                ->favoriteProducts()
+                ->whereIn('products.id', $ofertas->pluck('id'))
+                ->pluck('products.id')
+                ->all();
+        }
+
         return view('site.home', [
             'ofertas' => $ofertas,
             'marcas'  => $marcas,
+            'favoriteIds' => $favoriteIds,
         ]);
     }
 }

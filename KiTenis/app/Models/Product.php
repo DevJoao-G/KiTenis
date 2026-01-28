@@ -147,4 +147,11 @@ class Product extends Model
             ->where('featured_in_carousel', true)
             ->onPromotion();
     }
+
+        public function favoritedByUsers()
+    {
+        return $this->belongsToMany(\App\Models\User::class, 'favorites')
+            ->withTimestamps();
+    }
+
 }

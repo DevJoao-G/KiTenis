@@ -14,6 +14,12 @@
 
     <title>{{ config('app.name', 'KiTenis') }} - @yield('title', 'Loja de Tênis')</title>
 
+    {{-- ✅ Disponível para o JS (home.js, etc.) --}}
+    <script>
+        window.KITENIS = window.KITENIS || {};
+        window.KITENIS.auth = @json(auth()->check());
+    </script>
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     {{-- ✅ Para estilos injetados pelas views --}}
@@ -32,6 +38,9 @@
     @if (session('error'))
         <x-alert type="danger" :message="session('error')" />
     @endif
+
+    <!-- ✅ Toast container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 2000;"></div>
 
     <!-- Main Content -->
     <main class="py-4">

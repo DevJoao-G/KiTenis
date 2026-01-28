@@ -10,30 +10,74 @@ use Illuminate\View\View;
 class ProductController extends Controller
 {
     /**
-     * Lista de produtos
+     * Lista de produtos (página geral)
      */
     public function index(Request $request): View
     {
+        return $this->listing($request, title: 'Produtos');
+    }
+
+    /**
+     * Página Masculino
+     */
+    public function masculino(Request $request): View
+    {
+        return $this->listing($request, category: 'masculino', title: 'Masculino');
+    }
+
+    /**
+     * Página Feminino
+     */
+    public function feminino(Request $request): View
+    {
+        return $this->listing($request, category: 'feminino', title: 'Feminino');
+    }
+
+    /**
+     * Página Ofertas (promoções ativas)
+     */
+    public function ofertas(Request $request): View
+    {
+        return $this->listing($request, onlyPromotions: true, title: 'Ofertas');
+    }
+
+    /**
+     * Método reutilizável para as listagens
+     */
+    private function listing(
+        Request $request,
+        ?string $category = null,
+        bool $onlyPromotions = false,
+        string $title = 'Produtos'
+    ): View {
         $query = Product::query()
             ->active()
             ->inStock();
 
+        // Busca por nome ou descrição
         if ($search = $request->string('search')->trim()->toString()) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%");
+                  ->orWhere('description', 'like', "%{$search}%");
             });
         }
 
-        if ($categoria = $request->string('categoria')->toString()) {
-            $query->where('category', $categoria);
+        // Categoria fixa (para as páginas Masculino/Feminino)
+        if ($category) {
+            $query->where('category', $category);
+        } else {
+            // página geral permite query string ?categoria=
+            if ($categoria = $request->string('categoria')->toString()) {
+                $query->where('category', $categoria);
+            }
         }
 
-        // ofertas = promoções ativas
-        if ($request->boolean('ofertas')) {
+        // Ofertas = promoções ativas (do novo sistema)
+        if ($onlyPromotions || $request->boolean('ofertas')) {
             $query->onPromotion();
         }
 
+        // Ordenação segura
         $allowedOrderBy = ['created_at', 'price', 'name'];
         $orderBy = $request->input('order_by', 'created_at');
 
@@ -41,7 +85,9 @@ class ProductController extends Controller
             $orderBy = 'created_at';
         }
 
-        $orderDirection = $request->input('order_direction', 'desc') === 'asc' ? 'asc' : 'desc';
+        $orderDirection = $request->input('order_direction', 'desc') === 'asc'
+            ? 'asc'
+            : 'desc';
 
         $products = $query
             ->orderBy($orderBy, $orderDirection)
@@ -51,6 +97,7 @@ class ProductController extends Controller
 
         return view('site.products.index', [
             'products' => $products,
+            'pageTitle' => $title,
         ]);
     }
 

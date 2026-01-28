@@ -21,7 +21,7 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('products.*') ? 'active' : '' }}"
+                    <a class="nav-link {{ request()->routeIs('products.index') ? 'active' : '' }}"
                         href="{{ route('products.index') }}">
                         Produtos
                     </a>
@@ -35,32 +35,31 @@
 
                     <ul class="dropdown-menu dropdown-dark">
                         <li>
-                            <a class="dropdown-item" href="{{ route('products.index', ['categoria' => 'masculino']) }}">
+                            <a class="dropdown-item {{ request()->routeIs('products.masculino') ? 'bg-success text-white' : '' }}"
+                                href="{{ route('products.masculino') }}">
                                 Masculino
                             </a>
                         </li>
 
                         <li>
-                            <a class="dropdown-item" href="{{ route('products.index', ['categoria' => 'feminino']) }}">
+                            <a class="dropdown-item {{ request()->routeIs('products.feminino') ? 'bg-success text-white' : '' }}"
+                                href="{{ route('products.feminino') }}">
                                 Feminino
-                            </a>
-                        </li>
-
-                        <li>
-                            <a class="dropdown-item" href="{{ route('products.index', ['categoria' => 'infantil']) }}">
-                                Infantil
                             </a>
                         </li>
 
                         <li>
                             <hr class="dropdown-divider">
                         </li>
+
                         <li>
-                            <a class="dropdown-item fw-bold dropdown-offer" href="{{ route('products.index', ['ofertas' => true]) }}">
+                            <a class="dropdown-item fw-bold {{ request()->routeIs('products.ofertas') ? 'bg-success text-white' : '' }}"
+                                href="{{ route('products.ofertas') }}">
                                 Ofertas
                             </a>
                         </li>
                     </ul>
+
                 </li>
             </ul>
 
@@ -81,7 +80,8 @@
                     <li class="nav-item">
                         <a class="nav-link position-relative d-inline-flex align-items-center" href="#">
                             <i class="bi bi-handbag fs-5"></i>
-                            <span class="position-absolute top-0 start-100 translate-middle badge d-none d-lg-inline rounded-pill bg-success">
+                            <span
+                                class="position-absolute top-0 start-100 translate-middle badge d-none d-lg-inline rounded-pill bg-success">
                                 0
                                 <span class="visually-hidden">itens no carrinho</span>
                             </span>
@@ -120,7 +120,8 @@
                                     <hr class="dropdown-divider">
                                 </li>
                                 <li>
-                                    <a class="dropdown-item fw-bold dropdown-admin" href="{{ route('filament.admin.pages.dashboard') }}">
+                                    <a class="dropdown-item fw-bold dropdown-admin"
+                                        href="{{ route('filament.admin.pages.dashboard') }}">
                                         <i class="bi bi-shield-lock me-2"></i>Painel Admin
                                     </a>
                                 </li>

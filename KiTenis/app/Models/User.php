@@ -38,4 +38,11 @@ class User extends Authenticatable implements FilamentUser
         // Se tiver mais painéis no futuro, dá pra checar $panel->getId()
         return (bool) $this->is_admin;
     }
+
+        public function favoriteProducts()
+    {
+        return $this->belongsToMany(\App\Models\Product::class, 'favorites')
+            ->withTimestamps();
+    }
+
 }

@@ -1,9 +1,13 @@
 @extends('layouts.app')
 
+@section('title', $pageTitle ?? 'Produtos')
+
 @section('content')
     <div class="container py-4">
 
-        <h1 class="mt-4 mb-4 fw-bold">Produtos</h1>
+        <h1 class="mt-4 mb-4 fw-bold">
+            {{ $pageTitle ?? 'Produtos' }}
+        </h1>
 
         @if ($products->count())
             <div class="row g-4">
@@ -24,18 +28,27 @@
                             >
 
                             <div class="card-body d-flex flex-column">
-                                <span class="badge bg-secondary mb-2 text-capitalize">{{ $product->category }}</span>
+                                <span class="badge bg-secondary mb-2 text-capitalize">
+                                    {{ $product->category }}
+                                </span>
 
-                                <h6 class="card-title fw-semibold">{{ $product->name }}</h6>
+                                <h6 class="card-title fw-semibold">
+                                    {{ $product->name }}
+                                </h6>
 
                                 @if ($product->is_promotion_active)
                                     <div class="mb-2">
                                         <small class="text-muted text-decoration-line-through">
                                             R$ {{ number_format($product->price, 2, ',', '.') }}
                                         </small>
+
                                         <p class="fw-bold text-success fs-5 mb-0">
                                             R$ {{ number_format($product->discounted_price, 2, ',', '.') }}
                                         </p>
+
+                                        <small class="text-muted">
+                                            4x de R$ {{ number_format($product->discounted_price / 4, 2, ',', '.') }}
+                                        </small>
                                     </div>
                                 @else
                                     <p class="fw-bold text-success fs-5 mb-3">
