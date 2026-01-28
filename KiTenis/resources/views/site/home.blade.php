@@ -4,17 +4,17 @@
 
 @section('content')
 
-    {{-- OFERTAS (MARQUEE INFINITO – alinhado em linha, sem sobrepor) --}}
+   {{-- OFERTAS (apenas promoções ativas; se não tiver, não mostra) --}}
+@if(isset($ofertas) && $ofertas->count() > 0)
     <section class="bg-light py-5" data-aos="fade-up" data-aos-duration="1000">
         <div class="container">
             <div class="text-center mb-4">
                 <h2 class="fw-bold fs-1">Ofertas da Semana</h2>
-                <p class="text-secondary">Os melhores tênis com até 42% de desconto!</p>
+                <p class="text-secondary">Os melhores tênis em promoção agora!</p>
             </div>
 
             @php
                 $count = max(1, $ofertas->count());
-                // 10 itens -> ~30s fica suave
                 $duration = max(24, $count * 3); // segundos
             @endphp
 
@@ -25,22 +25,31 @@
                     @foreach ($ofertas as $produto)
                         <div class="oferta-slide">
                             <div class="card h-100 shadow-sm border-0 position-relative oferta-card">
-                                @php $desconto = round((1 - $produto->price / 600) * 100); @endphp
 
                                 <div class="position-absolute top-0 start-0 m-2" style="z-index: 10;">
-                                    <span class="badge bg-danger fw-semibold">-{{ $desconto }}%</span>
+                                    <span class="badge bg-danger fw-semibold">
+                                        {{ $produto->discount_badge ?? '-0%' }}
+                                    </span>
                                 </div>
 
                                 <button
                                     class="btn-favoritar position-absolute top-0 end-0 m-2 bg-white rounded-circle border-0 shadow-sm"
-                                    data-produto-id="{{ $produto->id }}" style="width: 38px; height: 38px; z-index: 10;"
-                                    aria-label="Favoritar {{ $produto->name }}" title="Favoritar produto">
+                                    data-produto-id="{{ $produto->id }}"
+                                    style="width: 38px; height: 38px; z-index: 10;"
+                                    aria-label="Favoritar {{ $produto->name }}"
+                                    title="Favoritar produto"
+                                >
                                     <i class="bi bi-heart fs-5"></i>
                                 </button>
 
                                 <div class="d-flex align-items-center justify-content-center oferta-img">
-                                    <img src="{{ $produto->image_url }}" class="img-fluid p-3" alt="{{ $produto->name }}"
-                                        loading="lazy" style="max-height: 190px; object-fit: contain;">
+                                    <img
+                                        src="{{ $produto->image_url }}"
+                                        class="img-fluid p-3"
+                                        alt="{{ $produto->name }}"
+                                        loading="lazy"
+                                        style="max-height: 190px; object-fit: contain;"
+                                    >
                                 </div>
 
                                 <div class="card-body d-flex flex-column pt-2">
@@ -53,24 +62,27 @@
                                     </h6>
 
                                     <div class="mb-3">
-                                        <small class="text-muted text-decoration-line-through">R$ 599,90</small>
-                                        <div class="h5 fw-bold text-success mb-0">
+                                        <small class="text-muted text-decoration-line-through">
                                             R$ {{ number_format($produto->price, 2, ',', '.') }}
+                                        </small>
+
+                                        <div class="h5 fw-bold text-success mb-0">
+                                            R$ {{ number_format($produto->discounted_price, 2, ',', '.') }}
                                         </div>
+
                                         <small class="text-muted">
-                                            4x de R$ {{ number_format($produto->price / 4, 2, ',', '.') }}
+                                            4x de R$ {{ number_format($produto->discounted_price / 4, 2, ',', '.') }}
                                         </small>
                                     </div>
 
                                     <div class="mt-auto">
                                         <a href="{{ route('products.show', $produto->id) }}"
-                                            class="btn btn-success w-100 fw-semibold">
+                                           class="btn btn-success w-100 fw-semibold">
                                             Ver detalhes
                                         </a>
 
                                         @if ($produto->stock > 0)
-                                            <small
-                                                class="text-success d-flex align-items-center justify-content-center gap-1 mt-2">
+                                            <small class="text-success d-flex align-items-center justify-content-center gap-1 mt-2">
                                                 <i class="bi bi-check-circle-fill"></i>
                                                 <span>Frete grátis</span>
                                             </small>
@@ -81,26 +93,35 @@
                         </div>
                     @endforeach
 
-                    {{-- Set 2 (duplicado para loop perfeito “tela a tela”) --}}
+                    {{-- Set 2 (duplicado para loop perfeito) --}}
                     @foreach ($ofertas as $produto)
                         <div class="oferta-slide" aria-hidden="true">
                             <div class="card h-100 shadow-sm border-0 position-relative oferta-card">
-                                @php $desconto = round((1 - $produto->price / 600) * 100); @endphp
 
                                 <div class="position-absolute top-0 start-0 m-2" style="z-index: 10;">
-                                    <span class="badge bg-danger fw-semibold">-{{ $desconto }}%</span>
+                                    <span class="badge bg-danger fw-semibold">
+                                        {{ $produto->discount_badge ?? '-0%' }}
+                                    </span>
                                 </div>
 
                                 <button
                                     class="btn-favoritar position-absolute top-0 end-0 m-2 bg-white rounded-circle border-0 shadow-sm"
-                                    data-produto-id="{{ $produto->id }}" style="width: 38px; height: 38px; z-index: 10;"
-                                    aria-label="Favoritar {{ $produto->name }}" title="Favoritar produto">
+                                    data-produto-id="{{ $produto->id }}"
+                                    style="width: 38px; height: 38px; z-index: 10;"
+                                    aria-label="Favoritar {{ $produto->name }}"
+                                    title="Favoritar produto"
+                                >
                                     <i class="bi bi-heart fs-5"></i>
                                 </button>
 
                                 <div class="d-flex align-items-center justify-content-center oferta-img">
-                                    <img src="{{ $produto->image_url }}" class="img-fluid p-3" alt="{{ $produto->name }}"
-                                        loading="lazy" style="max-height: 190px; object-fit: contain;">
+                                    <img
+                                        src="{{ $produto->image_url }}"
+                                        class="img-fluid p-3"
+                                        alt="{{ $produto->name }}"
+                                        loading="lazy"
+                                        style="max-height: 190px; object-fit: contain;"
+                                    >
                                 </div>
 
                                 <div class="card-body d-flex flex-column pt-2">
@@ -113,24 +134,27 @@
                                     </h6>
 
                                     <div class="mb-3">
-                                        <small class="text-muted text-decoration-line-through">R$ 599,90</small>
-                                        <div class="h5 fw-bold text-success mb-0">
+                                        <small class="text-muted text-decoration-line-through">
                                             R$ {{ number_format($produto->price, 2, ',', '.') }}
+                                        </small>
+
+                                        <div class="h5 fw-bold text-success mb-0">
+                                            R$ {{ number_format($produto->discounted_price, 2, ',', '.') }}
                                         </div>
+
                                         <small class="text-muted">
-                                            4x de R$ {{ number_format($produto->price / 4, 2, ',', '.') }}
+                                            4x de R$ {{ number_format($produto->discounted_price / 4, 2, ',', '.') }}
                                         </small>
                                     </div>
 
                                     <div class="mt-auto">
                                         <a href="{{ route('products.show', $produto->id) }}"
-                                            class="btn btn-success w-100 fw-semibold">
+                                           class="btn btn-success w-100 fw-semibold">
                                             Ver detalhes
                                         </a>
 
                                         @if ($produto->stock > 0)
-                                            <small
-                                                class="text-success d-flex align-items-center justify-content-center gap-1 mt-2">
+                                            <small class="text-success d-flex align-items-center justify-content-center gap-1 mt-2">
                                                 <i class="bi bi-check-circle-fill"></i>
                                                 <span>Frete grátis</span>
                                             </small>
@@ -143,15 +167,10 @@
 
                 </div>
             </div>
-
-            {{-- <div class="text-center mt-4">
-                <a href="{{ route('products.index', ['ofertas' => true]) }}" class="btn btn-success btn-lg px-5">
-                    Ver todas as ofertas
-                    <i class="bi bi-arrow-right ms-2"></i>
-                </a>
-            </div> --}}
         </div>
     </section>
+@endif
+
 
 
     {{-- NAVEGUE POR MARCAS --}}

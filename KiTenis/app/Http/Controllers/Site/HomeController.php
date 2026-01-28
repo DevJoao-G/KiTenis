@@ -14,13 +14,14 @@ class HomeController extends Controller
      */
     public function index(): View
     {
-        // Produtos em oferta (ex: até R$ 400)
+        // Apenas promoções ativas e marcadas para o carousel
         $ofertas = Product::query()
             ->active()
             ->inStock()
-            ->where('price', '<', 400)
+            ->promotionCarousel()
+            ->orderByDesc('discount_percentage')
             ->orderBy('price')
-            ->limit(6)
+            ->limit(12)
             ->get();
 
         // Marcas (somente ativas)

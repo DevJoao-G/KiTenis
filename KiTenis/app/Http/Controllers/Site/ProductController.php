@@ -18,40 +18,33 @@ class ProductController extends Controller
             ->active()
             ->inStock();
 
-        // Busca por nome ou descrição
         if ($search = $request->string('search')->trim()->toString()) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+                    ->orWhere('description', 'like', "%{$search}%");
             });
         }
 
-        // Filtro por categoria
         if ($categoria = $request->string('categoria')->toString()) {
             $query->where('category', $categoria);
         }
 
-        // Filtro de ofertas
+        // ofertas = promoções ativas
         if ($request->boolean('ofertas')) {
-            $query->where('price', '<', 400);
+            $query->onPromotion();
         }
 
-        // Ordenação segura
         $allowedOrderBy = ['created_at', 'price', 'name'];
         $orderBy = $request->input('order_by', 'created_at');
 
-        if (!in_array($orderBy, $allowedOrderBy)) {
+        if (! in_array($orderBy, $allowedOrderBy, true)) {
             $orderBy = 'created_at';
         }
 
-        $orderDirection = $request->input('order_direction', 'desc') === 'asc'
-            ? 'asc'
-            : 'desc';
+        $orderDirection = $request->input('order_direction', 'desc') === 'asc' ? 'asc' : 'desc';
 
-        $query->orderBy($orderBy, $orderDirection);
-
-        // Paginação padronizada
         $products = $query
+            ->orderBy($orderBy, $orderDirection)
             ->paginate(12)
             ->onEachSide(1)
             ->withQueryString();
@@ -66,7 +59,7 @@ class ProductController extends Controller
      */
     public function show(Product $product): View
     {
-        if (!$product->active) {
+        if (! $product->active) {
             abort(404);
         }
 
@@ -79,7 +72,7 @@ class ProductController extends Controller
             ->get();
 
         return view('site.products.show', [
-            'product'         => $product,
+            'product' => $product,
             'relatedProducts' => $relatedProducts,
         ]);
     }
