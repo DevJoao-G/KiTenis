@@ -78,7 +78,7 @@
                 @auth
                     <!-- Carrinho -->
                     @php
-                        $favoriteCount = Auth::user()->favoriteProducts()->count();
+                        $cartCount = collect(session('cart', []))->sum(fn ($i) => (int) ($i['qty'] ?? 1));
                     @endphp
 
                     <li class="nav-item">
@@ -86,16 +86,15 @@
                             href="{{ route('cart.index') }}">
                             <i class="bi bi-handbag fs-5"></i>
 
-                            @if($favoriteCount > 0)
+                            @if($cartCount > 0)
                                 <span
                                     class="position-absolute top-0 start-100 translate-middle badge d-none d-lg-inline rounded-pill bg-success">
-                                    {{ $favoriteCount }}
+                                    {{ $cartCount }}
                                     <span class="visually-hidden">itens no carrinho</span>
                                 </span>
                             @endif
                         </a>
                     </li>
-                    >
 
                     <!-- Usuário -->
                     <li class="nav-item dropdown">

@@ -118,9 +118,18 @@ class ProductController extends Controller
             ->limit(4)
             ->get();
 
+        $isFavorited = false;
+        if (auth()->check()) {
+            $isFavorited = auth()->user()
+                ->favoriteProducts()
+                ->whereKey($product->id)
+                ->exists();
+        }
+
         return view('site.products.show', [
             'product' => $product,
             'relatedProducts' => $relatedProducts,
+            'isFavorited' => $isFavorited,
         ]);
     }
 }

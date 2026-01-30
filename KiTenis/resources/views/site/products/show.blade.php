@@ -1,11 +1,59 @@
 @extends('layouts.app')
 
+@section('title', $product->name)
+
+@push('styles')
+<style>
+    .option-label { font-size: .9rem; }
+
+    .color-options .btn,
+    .size-options .btn { transition: all .15s ease; }
+
+    .color-options .btn {
+        border-radius: 999px;
+        padding: .35rem .75rem;
+    }
+
+    .size-options .btn {
+        width: 44px;
+        height: 44px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: .6rem;
+        font-weight: 600;
+    }
+
+    .btn-option-selected {
+        border-color: #198754 !important;
+        background-color: #198754 !important;
+        color: #fff !important;
+    }
+
+    .btn-ghost-icon {
+        width: 52px;
+        min-width: 52px;
+        height: 52px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: .75rem;
+    }
+</style>
+@endpush
+
 @section('content')
+@php
+    $colors = ['Preto', 'Azul Marinho', 'Vermelho'];
+    $sizes  = ['38','39','40','41','42','43','44'];
+@endphp
+
 <div class="container py-5">
 
     <div class="mb-4">
         <a href="{{ route('products.index') }}" class="text-decoration-none text-muted">
-            ← Voltar para produtos
+            ← Voltar para Produtos
         </a>
     </div>
 
@@ -35,23 +83,19 @@
         {{-- COLUNA INFORMAÇÕES --}}
         <div class="col-lg-6">
 
-            <div class="d-flex align-items-center gap-2 mb-2">
-                <span class="badge bg-secondary text-capitalize">{{ $product->category }}</span>
-
-                @if ($product->is_promotion_active)
-                    <span class="badge bg-danger">{{ $product->discount_badge }}</span>
-                @endif
+            <div class="text-uppercase text-muted small fw-semibold mb-1">
+                {{ $product->brand ?? 'Marca' }}
             </div>
 
-            <h1 class="fw-bold mb-3">{{ $product->name }}</h1>
+            <h1 class="fw-bold mb-2">{{ $product->name }}</h1>
 
             <div class="d-flex align-items-center mb-3">
                 <div class="text-warning me-2">★★★★☆</div>
-                <small class="text-muted">(4.6 • 312 avaliações)</small>
+                <small class="text-muted">(4.7 • 891 avaliações)</small>
             </div>
 
             {{-- Preço --}}
-            <div class="mb-4">
+            <div class="mb-3">
                 @if ($product->is_promotion_active)
                     <div class="d-flex flex-column gap-1">
                         <small class="text-muted text-decoration-line-through">
@@ -66,41 +110,124 @@
                         R$ {{ number_format($product->price, 2, ',', '.') }}
                     </span>
                 @endif
-            </div>
 
-            {{-- Estoque --}}
-            @if ($product->stock > 0)
-                <p class="text-success fw-semibold">✔ Em estoque ({{ $product->stock }} unidades)</p>
-            @else
-                <p class="text-danger fw-semibold">✖ Produto indisponível</p>
-            @endif
-
-            <p class="text-muted mt-4">{{ $product->description }}</p>
-
-            <div class="mt-4">
-                <label class="form-label fw-semibold">Quantidade</label>
-                <div class="input-group" style="max-width: 140px;">
-                    <button class="btn btn-outline-secondary" type="button">−</button>
-                    <input type="text" class="form-control text-center" value="1" readonly>
-                    <button class="btn btn-outline-secondary" type="button">+</button>
+                <div class="text-muted small mt-1">
+                    ou 10x de R$ {{ number_format(($product->is_promotion_active ? $product->discounted_price : $product->price) / 10, 2, ',', '.') }} sem juros
                 </div>
             </div>
 
-            <div class="d-grid gap-2 mt-4">
-                <button class="btn btn-success btn-lg" {{ $product->stock == 0 ? 'disabled' : '' }}>
-                    <i class="bi bi-cart-plus me-2"></i>
-                    Adicionar ao carrinho
-                </button>
+            <p class="text-muted mt-3">{{ $product->description }}</p>
 
-                <button class="btn btn-outline-secondary">♡ Favoritar</button>
-            </div>
+            {{-- ERROS --}}
+            @if ($errors->any())
+                <div class="alert alert-danger mt-3">
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-            <ul class="list-unstyled mt-4 text-muted">
-                <li>🚚 Frete grátis para compras acima de R$ 299</li>
-                <li>🔄 30 dias para troca ou devolução</li>
-                <li>🛡 Produto 100% original</li>
-            </ul>
+            <div id="selectionError" class="mt-3"></div>
 
+            {{-- FORM: ADICIONAR AO CARRINHO --}}
+            <form method="POST" action="{{ route('cart.add') }}" class="mt-4" id="addToCartForm">
+                @csrf
+                <input type="hidden" name="product_id" value="{{ $product->id }}">
+
+                {{-- Cor --}}
+                <div class="mb-3">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <div class="fw-semibold option-label">Cor:</div>
+                        <div class="text-muted option-label">
+                            <span id="colorLabel">Selecione</span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2 color-options">
+                        @foreach ($colors as $color)
+                            <button type="button" class="btn btn-outline-secondary" data-color="{{ $color }}">
+                                {{ $color }}
+                            </button>
+                        @endforeach
+                    </div>
+
+                    <input type="hidden" name="color" id="colorInput" value="{{ old('color') }}">
+                </div>
+
+                {{-- Tamanho --}}
+                <div class="mb-3">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <div class="fw-semibold option-label">Tamanho:</div>
+                        <div class="text-muted option-label">
+                            <span id="sizeLabel">Selecione</span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2 size-options">
+                        @foreach ($sizes as $size)
+                            <button type="button" class="btn btn-outline-secondary" data-size="{{ $size }}">
+                                {{ $size }}
+                            </button>
+                        @endforeach
+                    </div>
+
+                    <input type="hidden" name="size" id="sizeInput" value="{{ old('size') }}">
+                </div>
+
+                {{-- Quantidade --}}
+                <div class="mt-4">
+                    <label class="form-label fw-semibold">Quantidade</label>
+                    <div class="input-group" style="max-width: 160px;">
+                        <button class="btn btn-outline-secondary" type="button" id="qtyMinus">−</button>
+                        <input
+                            type="number"
+                            class="form-control text-center"
+                            name="qty"
+                            id="qtyInput"
+                            value="{{ old('qty', 1) }}"
+                            min="1"
+                            max="10"
+                            required
+                        >
+                        <button class="btn btn-outline-secondary" type="button" id="qtyPlus">+</button>
+                    </div>
+                </div>
+
+                {{-- Botões --}}
+                <div class="d-flex gap-2 mt-4">
+                    <button type="submit" class="btn btn-success btn-lg flex-grow-1" {{ $product->stock == 0 ? 'disabled' : '' }}>
+                        <i class="bi bi-cart-plus me-2"></i>
+                        Adicionar ao Carrinho
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn btn-outline-secondary btn-lg btn-ghost-icon btn-favoritar {{ ($isFavorited ?? false) ? 'favoritado' : '' }}"
+                        data-url="{{ route('favorites.toggle', $product) }}"
+                        aria-label="Favoritar {{ $product->name }}"
+                        title="Favoritar produto"
+                    >
+                        <i class="bi {{ ($isFavorited ?? false) ? 'bi-heart-fill' : 'bi-heart' }}"></i>
+                    </button>
+                </div>
+
+                <ul class="list-unstyled mt-4 text-muted">
+                    <li class="d-flex align-items-center gap-2">
+                        <i class="bi bi-truck"></i>
+                        Frete grátis para compras acima de R$ 299
+                    </li>
+                    <li class="d-flex align-items-center gap-2 mt-2">
+                        <i class="bi bi-arrow-repeat"></i>
+                        30 dias para troca ou devolução
+                    </li>
+                    <li class="d-flex align-items-center gap-2 mt-2">
+                        <i class="bi bi-shield-check"></i>
+                        Produto 100% original
+                    </li>
+                </ul>
+            </form>
         </div>
     </div>
 
@@ -108,7 +235,7 @@
     @if ($relatedProducts->count())
         <hr class="my-5">
 
-        <h4 class="fw-bold mb-4">Produtos relacionados</h4>
+        <h4 class="fw-bold mb-4">Produtos Relacionados</h4>
 
         <div class="row g-4">
             @foreach ($relatedProducts as $related)
@@ -128,6 +255,10 @@
                         >
 
                         <div class="card-body">
+                            <div class="text-uppercase text-muted small fw-semibold mb-1">
+                                {{ $related->brand ?? 'Marca' }}
+                            </div>
+
                             <h6 class="card-title">{{ $related->name }}</h6>
 
                             @if ($related->is_promotion_active)
@@ -158,3 +289,101 @@
 
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const colorButtons = document.querySelectorAll('.color-options button[data-color]');
+    const sizeButtons  = document.querySelectorAll('.size-options button[data-size]');
+
+    const colorInput = document.getElementById('colorInput');
+    const sizeInput  = document.getElementById('sizeInput');
+
+    const colorLabel = document.getElementById('colorLabel');
+    const sizeLabel  = document.getElementById('sizeLabel');
+
+    const errorBox = document.getElementById('selectionError');
+
+    function setSelected(buttons, activeButton) {
+        buttons.forEach(btn => btn.classList.remove('btn-option-selected'));
+        if (activeButton) activeButton.classList.add('btn-option-selected');
+    }
+
+    function showError(message) {
+        if (!errorBox) return;
+        errorBox.innerHTML = `<div class="alert alert-danger py-2 mb-0">${message}</div>`;
+    }
+
+    function clearError() {
+        if (!errorBox) return;
+        errorBox.innerHTML = '';
+    }
+
+    // Estado inicial (old())
+    if (colorInput && colorInput.value) {
+        const btn = Array.from(colorButtons).find(b => b.getAttribute('data-color') === colorInput.value);
+        if (btn) setSelected(colorButtons, btn);
+        if (colorLabel) colorLabel.textContent = colorInput.value;
+    }
+    if (sizeInput && sizeInput.value) {
+        const btn = Array.from(sizeButtons).find(b => b.getAttribute('data-size') === sizeInput.value);
+        if (btn) setSelected(sizeButtons, btn);
+        if (sizeLabel) sizeLabel.textContent = sizeInput.value;
+    }
+
+    colorButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const value = btn.getAttribute('data-color');
+            colorInput.value = value;
+            if (colorLabel) colorLabel.textContent = value;
+            setSelected(colorButtons, btn);
+            clearError();
+        });
+    });
+
+    sizeButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const value = btn.getAttribute('data-size');
+            sizeInput.value = value;
+            if (sizeLabel) sizeLabel.textContent = value;
+            setSelected(sizeButtons, btn);
+            clearError();
+        });
+    });
+
+    // Quantidade
+    const qtyMinus = document.getElementById('qtyMinus');
+    const qtyPlus  = document.getElementById('qtyPlus');
+    const qtyInput = document.getElementById('qtyInput');
+
+    function clamp(n, min, max) {
+        return Math.max(min, Math.min(max, n));
+    }
+
+    if (qtyMinus && qtyPlus && qtyInput) {
+        qtyMinus.addEventListener('click', () => {
+            const v = parseInt(qtyInput.value || '1', 10);
+            qtyInput.value = clamp(v - 1, 1, 10);
+        });
+        qtyPlus.addEventListener('click', () => {
+            const v = parseInt(qtyInput.value || '1', 10);
+            qtyInput.value = clamp(v + 1, 1, 10);
+        });
+    }
+
+    // Validação antes de enviar
+    const form = document.getElementById('addToCartForm');
+    if (form) {
+        form.addEventListener('submit', (e) => {
+            const c = (colorInput?.value || '').trim();
+            const s = (sizeInput?.value || '').trim();
+
+            if (!c || !s) {
+                e.preventDefault();
+                showError('Selecione <strong>cor</strong> e <strong>tamanho</strong> para adicionar ao carrinho.');
+            }
+        });
+    }
+});
+</script>
+@endpush

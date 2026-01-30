@@ -33,20 +33,19 @@
                                 </div>
 
                                 @php
-    $isFavorited = in_array($produto->id, $favoriteIds ?? [], true);
-@endphp
+                                    $isFavorited = in_array($produto->id, $favoriteIds ?? [], true);
+                                @endphp
 
-<button
-    class="btn-favoritar position-absolute top-0 end-0 m-2 bg-white rounded-circle border-0 shadow-sm {{ $isFavorited ? 'favoritado' : '' }}"
-    data-produto-id="{{ $produto->id }}"
-    data-url="{{ route('favorites.toggle', $produto) }}"
-    style="width: 38px; height: 38px; z-index: 10;"
-    aria-label="Favoritar {{ $produto->name }}"
-    title="Favoritar produto"
->
-    <i class="bi {{ $isFavorited ? 'bi-heart-fill' : 'bi-heart' }} fs-5"></i>
-</button>
-
+                                <button
+                                    class="btn-favoritar position-absolute top-0 end-0 m-2 bg-white rounded-circle border-0 shadow-sm {{ $isFavorited ? 'favoritado' : '' }}"
+                                    data-produto-id="{{ $produto->id }}"
+                                    data-url="{{ route('favorites.toggle', $produto) }}"
+                                    style="width: 38px; height: 38px; z-index: 10;"
+                                    aria-label="Favoritar {{ $produto->name }}"
+                                    title="Favoritar produto"
+                                >
+                                    <i class="bi {{ $isFavorited ? 'bi-heart-fill' : 'bi-heart' }} fs-5"></i>
+                                </button>
 
                                 <div class="d-flex align-items-center justify-content-center oferta-img">
                                     <img
@@ -110,14 +109,19 @@
                                     </span>
                                 </div>
 
+                                @php
+                                    $isFavorited = in_array($produto->id, $favoriteIds ?? [], true);
+                                @endphp
+
                                 <button
-                                    class="btn-favoritar position-absolute top-0 end-0 m-2 bg-white rounded-circle border-0 shadow-sm"
+                                    class="btn-favoritar position-absolute top-0 end-0 m-2 bg-white rounded-circle border-0 shadow-sm {{ $isFavorited ? 'favoritado' : '' }}"
                                     data-produto-id="{{ $produto->id }}"
+                                    data-url="{{ route('favorites.toggle', $produto) }}"
                                     style="width: 38px; height: 38px; z-index: 10;"
                                     aria-label="Favoritar {{ $produto->name }}"
                                     title="Favoritar produto"
                                 >
-                                    <i class="bi bi-heart fs-5"></i>
+                                    <i class="bi {{ $isFavorited ? 'bi-heart-fill' : 'bi-heart' }} fs-5"></i>
                                 </button>
 
                                 <div class="d-flex align-items-center justify-content-center oferta-img">
@@ -262,5 +266,4 @@
         AOS.init();
     </script>
 
-   
 @endpush
