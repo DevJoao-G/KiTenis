@@ -49,6 +49,13 @@
                         </li>
 
                         <li>
+                            <a class="dropdown-item {{ request()->routeIs('products.infantil') ? 'bg-success text-white' : '' }}"
+                                href="{{ route('products.infantil') }}">
+                                Infantil
+                            </a>
+                        </li>
+
+                        <li>
                             <hr class="dropdown-divider">
                         </li>
 

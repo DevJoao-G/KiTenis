@@ -1,0 +1,154 @@
+/* =====================================================
+   Checkout Modal (3 etapas) – identidade KiTenis
+   - Mantém visual do modal conforme prints
+   - Destaques em SUCCESS (sem laranja)
+   ===================================================== */
+
+.checkout-modal .modal-content {
+    background-color: #121a17;
+    color: #f8f9fa;
+    border: 1px solid #22312b;
+    border-radius: 14px;
+}
+
+.checkout-modal .modal-header {
+    border-bottom: 1px solid #22312b;
+}
+
+.checkout-modal .modal-title {
+    font-weight: 700;
+}
+
+.checkout-modal .btn-close {
+    filter: invert(1) grayscale(100%);
+    opacity: .85;
+}
+
+/* Stepper */
+.checkout-steps {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 18px;
+}
+
+.checkout-step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: rgba(248, 249, 250, 0.75);
+    font-weight: 600;
+    font-size: .9rem;
+}
+
+.checkout-step .step-circle {
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(248, 249, 250, 0.25);
+    font-size: .75rem;
+    line-height: 1;
+}
+
+.checkout-step.is-active {
+    color: #f8f9fa;
+}
+
+.checkout-step.is-active .step-circle {
+    border-color: var(--bs-success);
+    background-color: var(--bs-success);
+    color: #0b1410;
+}
+
+.checkout-separator {
+    height: 2px;
+    flex: 1;
+    background: rgba(248, 249, 250, 0.12);
+}
+
+/* Inputs dark */
+.checkout-modal .form-control,
+.checkout-modal .form-select {
+    background-color: #0f1512;
+    border: 1px solid #23312b;
+    color: #f8f9fa;
+}
+
+.checkout-modal .form-control:focus,
+.checkout-modal .form-select:focus {
+    border-color: var(--bs-success);
+    box-shadow: 0 0 0 .2rem rgba(25, 135, 84, 0.25);
+}
+
+.checkout-modal .form-control::placeholder {
+    color: rgba(248, 249, 250, 0.45);
+}
+
+.checkout-modal .form-text {
+    color: rgba(248, 249, 250, 0.55);
+}
+
+/* Opções de pagamento (cards clicáveis) */
+.payment-options {
+    display: grid;
+    gap: 10px;
+}
+
+.payment-option {
+    border: 1px solid #23312b;
+    border-radius: 12px;
+    padding: 14px 14px;
+    cursor: pointer;
+    transition: transform .12s ease, border-color .12s ease, box-shadow .12s ease;
+    background: rgba(15, 21, 18, 0.55);
+}
+
+.payment-option:hover {
+    border-color: rgba(25, 135, 84, 0.6);
+}
+
+.payment-option.is-selected {
+    border-color: var(--bs-success);
+    box-shadow: 0 0 0 .2rem rgba(25, 135, 84, 0.18);
+}
+
+.payment-option .form-check-input {
+    margin-top: .3rem;
+}
+
+.payment-option .payment-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+}
+
+.payment-option .payment-icon {
+    width: 18px;
+    text-align: center;
+    opacity: .95;
+}
+
+/* Botões */
+.checkout-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 18px;
+}
+
+.checkout-actions .btn {
+    border-radius: 10px;
+}
+
+/* Esconde/mostra etapas */
+.checkout-step-pane {
+    display: none;
+}
+
+.checkout-step-pane.is-visible {
+    display: block;
+}

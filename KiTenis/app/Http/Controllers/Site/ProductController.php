@@ -34,6 +34,14 @@ class ProductController extends Controller
     }
 
     /**
+     * Página Infantil
+     */
+    public function infantil(Request $request): View
+    {
+        return $this->listing($request, category: 'infantil', title: 'Infantil');
+    }
+
+    /**
      * Página Ofertas (promoções ativas)
      */
     public function ofertas(Request $request): View

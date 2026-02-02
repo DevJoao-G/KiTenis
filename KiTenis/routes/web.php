@@ -20,6 +20,7 @@ Route::prefix('produtos')->name('products.')->group(function () {
 
     Route::get('/masculino', [ProductController::class, 'masculino'])->name('masculino');
     Route::get('/feminino', [ProductController::class, 'feminino'])->name('feminino');
+    Route::get('/infantil', [ProductController::class, 'infantil'])->name('infantil');
     Route::get('/ofertas', [ProductController::class, 'ofertas'])->name('ofertas');
 
     Route::get('/{product}', [ProductController::class, 'show'])->name('show');
