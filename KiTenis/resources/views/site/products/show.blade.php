@@ -288,11 +288,44 @@
     @endif
 
 </div>
+
+@guest
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1080;">
+        <div id="loginRequiredToast" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    Você precisa estar logado para adicionar itens ao carrinho. Redirecionando...
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Fechar"></button>
+            </div>
+        </div>
+    </div>
+@endguest
+
 @endsection
 
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    @guest
+    const isGuest = true;
+    @else
+    const isGuest = false;
+    @endguest
+
+    const accessUrl = "{{ url('/access') }}";
+
+    function showLoginRequiredToast() {
+        const el = document.getElementById('loginRequiredToast');
+        if (!el || typeof bootstrap === 'undefined' || !bootstrap.Toast) {
+            // Fallback simples
+            window.location.assign(accessUrl);
+            return;
+        }
+        const toast = bootstrap.Toast.getOrCreateInstance(el, { delay: 1600 });
+        toast.show();
+        setTimeout(() => window.location.assign(accessUrl), 900);
+    }
     const colorButtons = document.querySelectorAll('.color-options button[data-color]');
     const sizeButtons  = document.querySelectorAll('.size-options button[data-size]');
 
@@ -375,6 +408,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('addToCartForm');
     if (form) {
         form.addEventListener('submit', (e) => {
+            if (isGuest) {
+                e.preventDefault();
+                clearError();
+                showLoginRequiredToast();
+                return;
+            }
             const c = (colorInput?.value || '').trim();
             const s = (sizeInput?.value || '').trim();
 
