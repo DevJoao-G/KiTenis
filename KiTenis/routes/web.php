@@ -1,13 +1,13 @@
 <?php
 
-use App\Http\Controllers\Site\HomeController;
-use App\Http\Controllers\Site\ProductController;
-use App\Http\Controllers\Site\CartController;
-use App\Http\Controllers\Site\NewsletterController;
 use App\Http\Controllers\Account\AccountController;
+use App\Http\Controllers\Site\CartController;
+use App\Http\Controllers\Site\CheckoutController;
 use App\Http\Controllers\Site\FavoriteController;
+use App\Http\Controllers\Site\HomeController;
+use App\Http\Controllers\Site\NewsletterController;
+use App\Http\Controllers\Site\ProductController;
 use Illuminate\Support\Facades\Route;
-
 
 // ========================================
 // ROTAS PÚBLICAS
@@ -30,6 +30,20 @@ Route::prefix('produtos')->name('products.')->group(function () {
 Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])
     ->name('newsletter.subscribe');
 
+
+// ========================================
+// CHECKOUT - ROTAS DE RETORNO (PÚBLICAS)
+// ========================================
+//
+// IMPORTANTE: o Mercado Pago precisa conseguir voltar nessas URLs.
+// Se elas estiverem dentro do auth, o usuário pode cair no login,
+// e o retorno "success/failure/pending" quebra.
+//
+Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
+Route::get('/checkout/failure', [CheckoutController::class, 'failure'])->name('checkout.failure');
+Route::get('/checkout/pending', [CheckoutController::class, 'pending'])->name('checkout.pending');
+
+
 // ========================================
 // ROTAS AUTENTICADAS
 // ========================================
@@ -43,6 +57,10 @@ Route::middleware('auth')->group(function () {
         Route::patch('/atualizar/{key}', [CartController::class, 'update'])->name('update');
         Route::delete('/remover/{key}', [CartController::class, 'remove'])->name('remove');
     });
+
+    // Checkout (Mercado Pago - iniciar pagamento)
+    Route::post('/checkout/mercadopago', [CheckoutController::class, 'mercadoPago'])
+        ->name('checkout.mercadopago');
 
     // Conta do Usuário
     Route::get('/conta', [AccountController::class, 'index'])->name('account');
@@ -58,8 +76,9 @@ Route::middleware('auth')->group(function () {
         ->name('favorites.toggle');
 });
 
+
 // ========================================
 // ROTAS DE AUTENTICAÇÃO
 // ========================================
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
