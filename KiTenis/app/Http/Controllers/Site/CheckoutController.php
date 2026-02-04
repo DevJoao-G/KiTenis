@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Site;
 
 use App\Http\Controllers\Controller;
+use App\Models\Order;
+use App\Models\OrderItem;
 use App\Services\CartService;
 use App\Services\MercadoPagoService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
@@ -179,6 +182,12 @@ class CheckoutController extends Controller
         // Cria preferência
         $pref = $this->mp->createPreference($payload);
 
+        // Guarda metadados pra confirmar no retorno (mesmo que seja simulação)
+        $request->session()->put('checkout_mp', [
+            'external_reference' => $externalReference,
+            'preference_id' => $pref['id'] ?? null,
+        ]);
+
         /**
          * ✅ DEBUG OPCIONAL (pra destravar "uma das partes é de teste")
          * Para usar:
@@ -207,8 +216,111 @@ class CheckoutController extends Controller
 
     public function success(Request $request)
     {
+        $user = $request->user();
+
+        // Se o usuário caiu aqui sem sessão/auth, não dá pra finalizar o pedido.
+        if (! $user) {
+            return view('site.checkout.success', [
+                'query' => $request->query(),
+                'order' => null,
+                'warning' => 'Pagamento retornou com sucesso, mas sua sessão expirou. Faça login e tente novamente.',
+            ]);
+        }
+
+        // Evita duplicar pedido (refresh/back)
+        $mp = (array) $request->session()->get('checkout_mp', []);
+        $draft = (array) $request->session()->get('checkout_draft', []);
+
+        $externalReference = $mp['external_reference'] ?? null;
+        $existing = null;
+
+        if ($externalReference) {
+            $existing = Order::query()
+                ->where('user_id', $user->id)
+                ->where('external_reference', $externalReference)
+                ->with(['items.product'])
+                ->first();
+        }
+
+        if ($existing) {
+            // Garante carrinho limpo
+            $this->cart->clear($request);
+            $request->session()->forget(['checkout_draft', 'checkout_mp']);
+
+            return view('site.checkout.success', [
+                'query' => $request->query(),
+                'order' => $existing,
+                'warning' => null,
+            ]);
+        }
+
+        // Monta dados do carrinho (o que será vendido)
+        [$items, $total, $count] = $this->cart->buildCartViewData($request);
+
+        if (($count ?? 0) <= 0) {
+            return redirect()->route('cart.index')->with('error', 'Seu carrinho está vazio.');
+        }
+
+        $created = DB::transaction(function () use ($request, $user, $items, $total, $draft, $externalReference, $mp) {
+            // Trava os produtos pra não vender acima do estoque
+            $productIds = collect($items)->pluck('product.id')->filter()->unique()->values()->all();
+
+            $products = \App\Models\Product::query()
+                ->whereIn('id', $productIds)
+                ->lockForUpdate()
+                ->get()
+                ->keyBy('id');
+
+            foreach ($items as $it) {
+                $p = $products->get($it['product']->id);
+                $qty = (int) ($it['qty'] ?? 0);
+                if (! $p || $qty <= 0) {
+                    continue;
+                }
+
+                if ((int) $p->stock < $qty) {
+                    throw new \RuntimeException("Estoque insuficiente para {$p->name}.");
+                }
+
+                $p->stock = (int) $p->stock - $qty;
+                $p->save();
+            }
+
+            $order = Order::create([
+                'user_id' => $user->id,
+                'total' => (float) $total,
+                // "approved" (success) = já considerar como venda efetivada
+                'status' => 'processing',
+                'external_reference' => $externalReference,
+                'preference_id' => $mp['preference_id'] ?? null,
+                'payment_method' => $draft['payment_method'] ?? null,
+                'paid_at' => now(),
+            ]);
+
+            foreach ($items as $it) {
+                $p = $it['product'];
+
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $p->id,
+                    'quantity' => (int) ($it['qty'] ?? 0),
+                    'price' => (float) ($it['unit'] ?? 0),
+                    'size' => $it['size'] ?? null,
+                    'color' => $it['color'] ?? null,
+                ]);
+            }
+
+            return $order->load(['items.product']);
+        });
+
+        // Carrinho e rascunho resolvidos
+        $this->cart->clear($request);
+        $request->session()->forget(['checkout_draft', 'checkout_mp']);
+
         return view('site.checkout.success', [
             'query' => $request->query(),
+            'order' => $created,
+            'warning' => null,
         ]);
     }
 

@@ -6,9 +6,26 @@
 <div class="container py-5">
     <div class="alert alert-success shadow-sm">
         <h1 class="h4 mb-2">Pagamento aprovado ✅</h1>
-        <p class="mb-0">Recebemos a confirmação do Mercado Pago. Em breve seu pedido aparecerá em <a href="{{ route('orders.index') }}">Meus pedidos</a> (quando a área de pedidos estiver integrada).</p>
+
+        @if(!empty($warning))
+            <p class="mb-0">{{ $warning }}</p>
+        @elseif($order)
+            <p class="mb-0">
+                Pedido criado com sucesso: <strong>#{{ $order->id }}</strong>.
+                Você pode acompanhar em <a href="{{ route('orders.show', $order->id) }}">detalhes do pedido</a>
+                ou em <a href="{{ route('orders.index') }}">Meus pedidos</a>.
+            </p>
+        @else
+            <p class="mb-0">
+                Pagamento retornou como sucesso, mas não foi possível gerar seu pedido.
+                Volte ao carrinho e tente novamente.
+            </p>
+        @endif
     </div>
 
-    <a class="btn btn-success mt-3" href="{{ route('home') }}">Voltar para a loja</a>
+    <div class="d-flex gap-2 flex-wrap">
+        <a class="btn btn-success" href="{{ route('home') }}">Voltar para a loja</a>
+        <a class="btn btn-outline-secondary" href="{{ route('cart.index') }}">Ir para o carrinho</a>
+    </div>
 </div>
 @endsection

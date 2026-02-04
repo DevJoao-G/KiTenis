@@ -17,9 +17,11 @@ class ProductForm
         return $schema
             ->components([
                 TextInput::make('name')
+                    ->label('Nome')
                     ->required(),
 
                 Textarea::make('description')
+                    ->label('Descrição')
                     ->required()
                     ->columnSpanFull(),
 
@@ -49,7 +51,7 @@ class ProductForm
                     ->helperText('Se vazio, a promoção não tem data de término.'),
 
                 Toggle::make('featured_in_carousel')
-                    ->label('Mostrar no carousel de promoções')
+                    ->label('Mostrar no carrossel de promoções')
                     ->helperText('O produto aparece na Home apenas quando a promoção estiver ativa.'),
 
                 TextInput::make('stock')
@@ -59,6 +61,7 @@ class ProductForm
                     ->default(0),
 
                 FileUpload::make('image')
+                    ->label('Imagem')
                     ->image()
                     ->disk('public')
                     ->directory('products')
@@ -66,6 +69,7 @@ class ProductForm
                     ->imageEditor(),
 
                 Select::make('category')
+                    ->label('Categoria')
                     ->options([
                         'masculino' => 'Masculino',
                         'feminino'  => 'Feminino',

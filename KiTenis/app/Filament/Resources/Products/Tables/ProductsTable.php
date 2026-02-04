@@ -20,10 +20,11 @@ class ProductsTable
         return $table
             ->columns([
                 TextColumn::make('name')
+                    ->label('Nome')
                     ->searchable(),
 
                 IconColumn::make('featured_in_carousel')
-                    ->label('Carousel')
+                    ->label('Carrossel')
                     ->boolean()
                     ->toggleable(),
 
@@ -56,6 +57,7 @@ class ProductsTable
                     ->sortable(),
 
                 ImageColumn::make('image')
+                    ->label('Imagem')
                     ->disk('public'),
 
                 TextColumn::make('category')
@@ -77,11 +79,13 @@ class ProductsTable
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('created_at')
+                    ->label('Criado em')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('updated_at')
+                    ->label('Atualizado em')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -91,10 +95,10 @@ class ProductsTable
             ])
             ->recordActions([
                 Action::make('promo')
-                    ->label(fn ($record) => $record->featured_in_carousel ? 'Editar promoção' : 'Adicionar ao carousel')
+                    ->label(fn ($record) => $record->featured_in_carousel ? 'Editar promoção' : 'Adicionar ao carrossel')
                     ->icon(fn ($record) => $record->featured_in_carousel ? 'heroicon-o-tag' : 'heroicon-o-plus-circle')
                     ->color(fn ($record) => $record->featured_in_carousel ? 'warning' : 'success')
-                    ->modalHeading(fn ($record) => $record->featured_in_carousel ? 'Editar promoção' : 'Adicionar ao carousel de promoções')
+                    ->modalHeading(fn ($record) => $record->featured_in_carousel ? 'Editar promoção' : 'Adicionar ao carrossel de promoções')
                     ->form([
                         TextInput::make('discount_percentage')
                             ->label('Desconto (%)')
@@ -128,7 +132,7 @@ class ProductsTable
                     }),
 
                 Action::make('removePromo')
-                    ->label('Remover do carousel')
+                    ->label('Remover do carrossel')
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
                     ->requiresConfirmation()
