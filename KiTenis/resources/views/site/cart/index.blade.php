@@ -27,8 +27,6 @@
             </span>
         </div>
 
-        {{-- ✅ Removido: alerts/flash. Agora usamos Toast. --}}
-
         @if (empty($items))
             <div class="card border-0 shadow-sm" id="cartEmptyBox">
                 <div class="card-body p-4">
@@ -189,34 +187,29 @@
                                 </div>
                             </div>
 
-                            {{-- ✅ Removido: alert de erros. Agora mostramos via Toast. --}}
                             <form id="checkoutForm" method="POST" action="{{ route('checkout.mercadopago') }}" novalidate>
                                 @csrf
+
                                 {{-- ETAPA 1 --}}
                                 <div class="checkout-step-pane is-visible" data-pane="0">
                                     <div class="row g-3">
                                         <div class="col-12">
-                                            <label class="form-label fw-semibold">Nome completo <span
-                                                    class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" name="buyer_name" placeholder="" required>
+                                            <label class="form-label fw-semibold">Nome completo <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" name="buyer_name" required>
                                         </div>
 
                                         <div class="col-md-6">
                                             <label class="form-label fw-semibold">CPF <span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" name="buyer_cpf"
-                                                placeholder="Somente números" inputmode="numeric" required>
+                                            <input type="text" class="form-control" name="buyer_cpf" inputmode="numeric" required>
                                         </div>
 
                                         <div class="col-md-6">
-                                            <label class="form-label fw-semibold">Celular <span
-                                                    class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" name="buyer_phone"
-                                                placeholder="DDD + número" inputmode="numeric" required>
+                                            <label class="form-label fw-semibold">Celular <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" name="buyer_phone" inputmode="numeric" required>
                                         </div>
 
                                         <div class="col-md-6">
-                                            <label class="form-label fw-semibold">Data de Nascimento <span
-                                                    class="text-danger">*</span></label>
+                                            <label class="form-label fw-semibold">Data de Nascimento <span class="text-danger">*</span></label>
                                             <input type="date" class="form-control" name="buyer_birth" required>
                                         </div>
                                     </div>
@@ -234,68 +227,57 @@
                                     <div class="row g-3">
                                         <div class="col-md-4">
                                             <label class="form-label fw-semibold">CEP <span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" name="ship_cep" placeholder="00000000"
-                                                inputmode="numeric" required>
-                                            <div class="form-text">Ao preencher o CEP, tentaremos completar automaticamente.
-                                            </div>
+                                            <input type="text" class="form-control" name="ship_cep" inputmode="numeric" required>
+                                            <div class="form-text">Ao preencher o CEP, tentaremos completar automaticamente.</div>
                                         </div>
 
                                         <div class="col-md-8">
                                             <label class="form-label fw-semibold">Rua <span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" name="ship_street" placeholder="" required>
+                                            <input type="text" class="form-control" name="ship_street" required>
                                         </div>
 
                                         <div class="col-md-4">
-                                            <label class="form-label fw-semibold">Número <span
-                                                    class="text-danger">*</span></label>
+                                            <label class="form-label fw-semibold">Número <span class="text-danger">*</span></label>
                                             <input type="text" class="form-control" name="ship_number" required>
                                         </div>
 
                                         <div class="col-md-4">
                                             <label class="form-label fw-semibold">Complemento (apto)</label>
-                                            <input type="text" class="form-control" name="ship_complement"
-                                                placeholder="Ex: Apto 12, Bloco B">
+                                            <input type="text" class="form-control" name="ship_complement">
                                         </div>
 
                                         <div class="col-md-4">
-                                            <label class="form-label fw-semibold">Bairro <span
-                                                    class="text-danger">*</span></label>
+                                            <label class="form-label fw-semibold">Bairro <span class="text-danger">*</span></label>
                                             <input type="text" class="form-control" name="ship_district" required>
                                         </div>
 
                                         <div class="col-md-8">
-                                            <label class="form-label fw-semibold">Cidade <span
-                                                    class="text-danger">*</span></label>
+                                            <label class="form-label fw-semibold">Cidade <span class="text-danger">*</span></label>
                                             <input type="text" class="form-control" name="ship_city" required>
                                         </div>
 
                                         <div class="col-md-4">
-                                            <label class="form-label fw-semibold">Estado (UF) <span
-                                                    class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" name="ship_uf" maxlength="2"
-                                                placeholder="SP" required>
+                                            <label class="form-label fw-semibold">Estado (UF) <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" name="ship_uf" maxlength="2" placeholder="SP" required>
                                         </div>
                                     </div>
 
                                     <div class="checkout-actions">
-                                        <button type="button" class="btn btn-outline-light" id="btnBack2">
-                                            Voltar
-                                        </button>
+                                        <button type="button" class="btn btn-outline-light" id="btnBack2">Voltar</button>
                                         <button type="button" class="btn btn-success" id="btnNext2">
                                             Próximo <i class="bi bi-arrow-right ms-1"></i>
                                         </button>
                                     </div>
                                 </div>
 
-                                {{-- ETAPA 3 --}}
+                                {{-- ETAPA 3 (✅ SOMENTE SELEÇÃO DO MÉTODO) --}}
                                 <div class="checkout-step-pane" data-pane="2">
                                     <label class="form-label fw-semibold">Forma de Pagamento</label>
 
                                     <div class="payment-options" id="paymentOptions">
                                         <div class="payment-option is-selected" data-method="card">
                                             <div class="form-check m-0 d-flex align-items-start gap-2">
-                                                <input class="form-check-input" type="radio" name="payment_method" value="card"
-                                                    checked>
+                                                <input class="form-check-input" type="radio" name="payment_method" value="card" checked>
                                                 <div class="payment-label">
                                                     <span class="payment-icon"><i class="bi bi-credit-card"></i></span>
                                                     <span>Cartão de Crédito</span>
@@ -305,8 +287,7 @@
 
                                         <div class="payment-option" data-method="boleto">
                                             <div class="form-check m-0 d-flex align-items-start gap-2">
-                                                <input class="form-check-input" type="radio" name="payment_method"
-                                                    value="boleto">
+                                                <input class="form-check-input" type="radio" name="payment_method" value="boleto">
                                                 <div class="payment-label">
                                                     <span class="payment-icon"><i class="bi bi-receipt"></i></span>
                                                     <span>Boleto Bancário</span>
@@ -325,65 +306,12 @@
                                         </div>
                                     </div>
 
-                                    <div class="mt-3" id="paymentPaneCard">
-                                        <div class="row g-3">
-                                            <div class="col-12">
-                                                <label class="form-label fw-semibold">Número do Cartão <span
-                                                        class="text-danger">*</span></label>
-                                                <input type="text" class="form-control" name="card_number"
-                                                    placeholder="0000 0000 0000 0000" inputmode="numeric">
-                                            </div>
-
-                                            <div class="col-md-6">
-                                                <label class="form-label fw-semibold">Validade <span
-                                                        class="text-danger">*</span></label>
-                                                <input type="text" class="form-control" name="card_exp" placeholder="MM/AA"
-                                                    inputmode="numeric">
-                                            </div>
-
-                                            <div class="col-md-6">
-                                                <label class="form-label fw-semibold">CVV <span
-                                                        class="text-danger">*</span></label>
-                                                <input type="text" class="form-control" name="card_cvv" placeholder="123"
-                                                    inputmode="numeric" maxlength="4">
-                                            </div>
-
-                                            <div class="col-12">
-                                                <label class="form-label fw-semibold">Nome no Cartão <span
-                                                        class="text-danger">*</span></label>
-                                                <input type="text" class="form-control" name="card_name"
-                                                    placeholder="NOME COMO NO CARTÃO">
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="mt-3 d-none" id="paymentPaneBoleto">
-                                        <div class="row g-3">
-                                            <div class="col-12">
-                                                <label class="form-label fw-semibold">E-mail para envio do boleto <span
-                                                        class="text-danger">*</span></label>
-                                                <input type="email" class="form-control" name="boleto_email"
-                                                    placeholder="seuemail@exemplo.com">
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="mt-3 d-none" id="paymentPanePix">
-                                        {{-- ✅ Removido alert (agora é texto neutro) --}}
-                                        <div class="text-muted">
-                                            Ao finalizar, vamos gerar o QR Code / Copia e Cola do PIX para pagamento.
-                                        </div>
-                                    </div>
-
                                     <div class="checkout-actions">
-                                        <button type="button" class="btn btn-outline-light" id="btnBack3">
-                                            Voltar
-                                        </button>
-                                        <button type="submit" class="btn btn-success" id="btnFinish">
-                                            Finalizar Pedido
-                                        </button>
+                                        <button type="button" class="btn btn-outline-light" id="btnBack3">Voltar</button>
+                                        <button type="submit" class="btn btn-success" id="btnFinish">Finalizar Pedido</button>
                                     </div>
                                 </div>
+
                             </form>
                         </div>
                     </div>
@@ -393,7 +321,7 @@
 
     </div>
 
-    {{-- ✅ Toasts (canto inferior direito) --}}
+    {{-- Toasts (canto inferior direito) --}}
     <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
         <div id="toastStack" class="toast-container"></div>
     </div>
@@ -408,17 +336,8 @@
             const root = document.getElementById('cartRoot');
             if (!root) return;
 
-            const countBadge = document.getElementById('cartCountBadge');
-
-            const summarySubtotal = document.getElementById('summarySubtotal');
-            const summaryShipping = document.getElementById('summaryShipping');
-            const summaryTotal = document.getElementById('summaryTotal');
-            const summaryInstallments = document.getElementById('summaryInstallments');
-
-            const money = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
-
             // ==========================
-            // ✅ Toast (Bootstrap) - substitui alerts
+            // Toast (Bootstrap)
             // ==========================
             const toastStack = document.getElementById('toastStack');
 
@@ -469,16 +388,25 @@
                 el.addEventListener('hidden.bs.toast', () => el.remove());
             }
 
-            // Mantém o mesmo nome usado no seu JS (pra não quebrar nada)
             function showFlash(type, text) {
-                // map: alert-danger -> danger etc (aqui você já passa "success/danger")
                 showToast(type, text);
             }
 
-            // Erros do backend (primeiro erro)
             if (Array.isArray(window.__checkoutErrors) && window.__checkoutErrors.length) {
                 showToast('danger', window.__checkoutErrors[0]);
             }
+
+            // ==========================
+            // Carrinho (AJAX) - mantido
+            // ==========================
+            const countBadge = document.getElementById('cartCountBadge');
+
+            const summarySubtotal = document.getElementById('summarySubtotal');
+            const summaryShipping = document.getElementById('summaryShipping');
+            const summaryTotal = document.getElementById('summaryTotal');
+            const summaryInstallments = document.getElementById('summaryInstallments');
+
+            const money = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
 
             function setLoading(card, isLoading) {
                 if (!card) return;
@@ -486,7 +414,6 @@
                 card.style.pointerEvents = isLoading ? 'none' : 'auto';
             }
 
-            // ✅ Atualiza o badge do carrinho no HEADER em tempo real (mantido)
             function updateNavbarCartBadge(count) {
                 const cartUrl = root.getAttribute('data-cart-link');
                 if (!cartUrl) return;
@@ -506,7 +433,8 @@
 
                 if (!badge) {
                     badge = document.createElement('span');
-                    badge.className = 'position-absolute top-0 start-100 translate-middle badge d-none d-lg-inline rounded-pill bg-success';
+                    badge.className =
+                        'position-absolute top-0 start-100 translate-middle badge d-none d-lg-inline rounded-pill bg-success';
                     cartLink.appendChild(badge);
                 }
 
@@ -640,7 +568,7 @@
             }
 
             // =============================
-            // Checkout (Modal 3 Etapas) - mantido
+            // Checkout (Modal 3 Etapas) - Step 3 simplificado
             // =============================
             const checkoutModalEl = document.getElementById('checkoutModal');
             const checkoutForm = document.getElementById('checkoutForm');
@@ -654,9 +582,6 @@
             const btnFinish = document.getElementById('btnFinish');
 
             const paymentOptions = Array.from(document.querySelectorAll('#paymentOptions .payment-option'));
-            const paneCard = document.getElementById('paymentPaneCard');
-            const paneBoleto = document.getElementById('paymentPaneBoleto');
-            const panePix = document.getElementById('paymentPanePix');
 
             let currentStep = 0;
 
@@ -722,13 +647,6 @@
                 return checked?.value || 'card';
             }
 
-            function syncPaymentPanes() {
-                const method = getPaymentMethod();
-                if (paneCard) paneCard.classList.toggle('d-none', method !== 'card');
-                if (paneBoleto) paneBoleto.classList.toggle('d-none', method !== 'boleto');
-                if (panePix) panePix.classList.toggle('d-none', method !== 'pix');
-            }
-
             function selectPayment(method) {
                 paymentOptions.forEach((opt) => {
                     const isThis = opt.getAttribute('data-method') === method;
@@ -736,7 +654,6 @@
                     const radio = opt.querySelector('input[type="radio"]');
                     if (radio && isThis) radio.checked = true;
                 });
-                syncPaymentPanes();
             }
 
             function markInvalid(el, invalid) {
@@ -790,37 +707,10 @@
                 return okCep && okStreet && okNumber && okDistrict && okCity && okUf;
             }
 
+            // ✅ Step 3 agora não valida campos, só garante que existe método selecionado
             function validateStep2() {
-                if (!checkoutForm) return false;
                 const method = getPaymentMethod();
-
-                if (method === 'card') {
-                    const n = checkoutForm.querySelector('input[name="card_number"]');
-                    const exp = checkoutForm.querySelector('input[name="card_exp"]');
-                    const cvv = checkoutForm.querySelector('input[name="card_cvv"]');
-                    const name = checkoutForm.querySelector('input[name="card_name"]');
-
-                    const okN = onlyDigits(n?.value).length >= 13;
-                    const okExp = !!exp?.value?.trim();
-                    const okCvv = onlyDigits(cvv?.value).length >= 3;
-                    const okName = !!name?.value?.trim();
-
-                    markInvalid(n, !okN);
-                    markInvalid(exp, !okExp);
-                    markInvalid(cvv, !okCvv);
-                    markInvalid(name, !okName);
-
-                    return okN && okExp && okCvv && okName;
-                }
-
-                if (method === 'boleto') {
-                    const email = checkoutForm.querySelector('input[name="boleto_email"]');
-                    const okEmail = !!email?.value?.trim();
-                    markInvalid(email, !okEmail);
-                    return okEmail;
-                }
-
-                return true; // PIX
+                return ['card', 'boleto', 'pix'].includes(method);
             }
 
             function bindCheckout() {
@@ -912,18 +802,8 @@
                     if (!ok2) {
                         e.preventDefault();
                         setStep(2);
-                        showFlash('warning', 'Confira os campos do pagamento.');
+                        showFlash('warning', 'Escolha uma forma de pagamento.');
                         return;
-                    }
-
-                    // Checkout Pro (redirect): não enviar dados sensíveis do cartão
-                    const method = getPaymentMethod();
-                    if (method === 'card') {
-                        const sensitive = ['card_number', 'card_exp', 'card_cvv', 'card_name'];
-                        sensitive.forEach((name) => {
-                            const el = checkoutForm.querySelector(`input[name="${name}"]`);
-                            if (el) el.value = '';
-                        });
                     }
 
                     document.activeElement?.blur();
@@ -938,13 +818,10 @@
                         btnFinish.innerHTML = 'Redirecionando...';
                     }
                 });
-
-                syncPaymentPanes();
             }
 
             bindCheckout();
 
-            // Carrinho (AJAX): mantém funcionando
             root.addEventListener('click', handleCardClick);
         });
     </script>
