@@ -11,7 +11,7 @@
             <div class="text-muted">Gerencie seus dados e acompanhe seus pedidos.</div>
         </div>
 
-        <div class="d-flex gap-2">
+        <div class="d-grid gap-2 d-sm-flex">
             <a href="{{ route('orders.index') }}" class="btn btn-outline-secondary">
                 <i class="bi bi-bag-check me-1"></i> Meus Pedidos
             </a>

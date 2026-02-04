@@ -19,7 +19,7 @@
     <div class="container py-5" id="cartRoot" data-free-from="{{ $shippingFreeFrom }}"
         data-cart-link="{{ route('cart.index') }}">
 
-        <div class="d-flex align-items-center justify-content-between mb-4">
+        <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between gap-2 mb-4">
             <h1 class="fw-bold mb-0">Carrinho de Compras</h1>
 
             <span class="badge bg-success" id="cartCountBadge">
@@ -46,14 +46,18 @@
                             data-update-url="{{ route('cart.update', $item['key']) }}"
                             data-remove-url="{{ route('cart.remove', $item['key']) }}">
                             <div class="card-body">
-                                <div class="d-flex gap-3 align-items-center">
+                                <div class="row g-3 align-items-start align-items-md-center">
 
-                                    <div style="width: 92px; min-width: 92px;">
-                                        <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="img-fluid rounded"
-                                            style="width: 92px; height: 92px; object-fit: cover;">
+                                    {{-- Imagem --}}
+                                    <div class="col-12 col-sm-auto">
+                                        <div class="mx-auto mx-sm-0" style="width: 92px; min-width: 92px;">
+                                            <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="img-fluid rounded"
+                                                style="width: 92px; height: 92px; object-fit: cover;">
+                                        </div>
                                     </div>
 
-                                    <div class="flex-grow-1">
+                                    {{-- Infos --}}
+                                    <div class="col-12 col-sm">
                                         <div class="fw-semibold">{{ $product->name }}</div>
                                         <div class="text-muted small">{{ $product->brand ?? 'Marca' }}</div>
 
@@ -70,15 +74,19 @@
                                         </div>
                                     </div>
 
-                                    <div class="text-end">
+                                    {{-- Ações / Quantidade --}}
+                                    <div class="col-12 col-md-auto">
+                                        <div class="d-flex justify-content-between justify-content-md-end align-items-center">
+                                            <div class="text-muted small d-md-none">Ações</div>
 
-                                        {{-- Remover (AJAX) --}}
-                                        <button type="button" class="btn btn-link text-muted p-0 btn-remove" title="Remover">
-                                            <i class="bi bi-trash3"></i>
-                                        </button>
+                                            {{-- Remover (AJAX) --}}
+                                            <button type="button" class="btn btn-link text-muted p-0 btn-remove" title="Remover">
+                                                <i class="bi bi-trash3"></i>
+                                            </button>
+                                        </div>
 
                                         <div class="mt-3">
-                                            <div class="input-group input-group-sm justify-content-end" style="width: 120px;">
+                                            <div class="input-group input-group-sm justify-content-start justify-content-md-end" style="width: 140px;">
                                                 <button class="btn btn-outline-secondary btn-dec" type="button"
                                                     aria-label="Diminuir">−</button>
                                                 <input type="text" class="form-control text-center qty-value"
@@ -87,14 +95,13 @@
                                                     aria-label="Aumentar">+</button>
                                             </div>
 
-                                            <div class="text-muted small mt-1">
+                                            <div class="text-muted small mt-2 text-start text-md-end">
                                                 Subtotal:
                                                 <strong class="subtotal-value" data-subtotal="{{ $item['subtotal'] }}">
                                                     R$ {{ number_format($item['subtotal'], 2, ',', '.') }}
                                                 </strong>
                                             </div>
                                         </div>
-
                                     </div>
 
                                 </div>
@@ -134,14 +141,16 @@
                                 ou {{ $installments }}x de R$ {{ number_format($installmentValue, 2, ',', '.') }} sem juros
                             </div>
 
-                            <button class="btn btn-success w-100 fw-semibold mb-2" type="button" data-bs-toggle="modal"
-                                data-bs-target="#checkoutModal">
-                                Finalizar Compra <i class="bi bi-arrow-right ms-1"></i>
-                            </button>
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-success fw-semibold" type="button" data-bs-toggle="modal"
+                                    data-bs-target="#checkoutModal">
+                                    Finalizar Compra <i class="bi bi-arrow-right ms-1"></i>
+                                </button>
 
-                            <a href="{{ route('products.index') }}" class="btn btn-outline-secondary w-100">
-                                Continuar Comprando
-                            </a>
+                                <a href="{{ route('products.index') }}" class="btn btn-outline-secondary">
+                                    Continuar Comprando
+                                </a>
+                            </div>
 
                             <div class="text-muted small mt-3">
                                 <i class="bi bi-truck me-1"></i>
@@ -199,34 +208,37 @@
                                 <div class="checkout-step-pane is-visible" data-pane="0">
                                     <div class="row g-3">
                                         <div class="col-12">
-                                            <label class="form-label fw-semibold">Nome completo <span
-                                                    class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" name="buyer_name" placeholder="" required>
+                                            <h6 class="fw-bold mb-0">Informações do comprador</h6>
+                                            <p class="text-muted small mb-0">Preencha seus dados pessoais para continuar.</p>
                                         </div>
 
                                         <div class="col-md-6">
-                                            <label class="form-label fw-semibold">CPF <span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" name="buyer_cpf"
-                                                placeholder="Somente números" inputmode="numeric" required>
+                                            <label class="form-label">Nome completo</label>
+                                            <input type="text" name="buyer_name" class="form-control" required>
+                                            <div class="invalid-feedback">Informe seu nome completo.</div>
                                         </div>
 
                                         <div class="col-md-6">
-                                            <label class="form-label fw-semibold">Celular <span
-                                                    class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" name="buyer_phone"
-                                                placeholder="DDD + número" inputmode="numeric" required>
+                                            <label class="form-label">CPF</label>
+                                            <input type="text" name="buyer_cpf" class="form-control" inputmode="numeric" required>
+                                            <div class="invalid-feedback">Informe um CPF válido.</div>
                                         </div>
 
                                         <div class="col-md-6">
-                                            <label class="form-label fw-semibold">Data de Nascimento <span
-                                                    class="text-danger">*</span></label>
-                                            <input type="date" class="form-control" name="buyer_birth" required>
+                                            <label class="form-label">Telefone</label>
+                                            <input type="text" name="buyer_phone" class="form-control" inputmode="numeric" required>
+                                            <div class="invalid-feedback">Informe um telefone válido.</div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label class="form-label">Data de nascimento</label>
+                                            <input type="date" name="buyer_birth" class="form-control" required>
+                                            <div class="invalid-feedback">Informe sua data de nascimento.</div>
                                         </div>
                                     </div>
 
-                                    <div class="checkout-actions">
-                                        <div></div>
-                                        <button type="button" class="btn btn-success" id="btnNext1">
+                                    <div class="d-flex justify-content-end mt-4">
+                                        <button type="button" class="btn btn-success fw-semibold" id="btnNextToStep2">
                                             Próximo <i class="bi bi-arrow-right ms-1"></i>
                                         </button>
                                     </div>
@@ -235,56 +247,59 @@
                                 {{-- ETAPA 2 --}}
                                 <div class="checkout-step-pane" data-pane="1">
                                     <div class="row g-3">
+                                        <div class="col-12">
+                                            <h6 class="fw-bold mb-0">Informações da residência</h6>
+                                            <p class="text-muted small mb-0">Preencha o endereço de entrega.</p>
+                                        </div>
+
                                         <div class="col-md-4">
-                                            <label class="form-label fw-semibold">CEP <span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" name="ship_cep" placeholder="00000000"
-                                                inputmode="numeric" required>
-                                            <div class="form-text">Ao preencher o CEP, tentaremos completar automaticamente.
-                                            </div>
+                                            <label class="form-label">CEP</label>
+                                            <input type="text" name="ship_cep" class="form-control" inputmode="numeric" required>
+                                            <div class="invalid-feedback">Informe um CEP válido.</div>
                                         </div>
 
                                         <div class="col-md-8">
-                                            <label class="form-label fw-semibold">Rua <span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" name="ship_street" placeholder="" required>
+                                            <label class="form-label">Endereço</label>
+                                            <input type="text" name="ship_street" class="form-control" required>
+                                            <div class="invalid-feedback">Informe o endereço.</div>
                                         </div>
 
                                         <div class="col-md-4">
-                                            <label class="form-label fw-semibold">Número <span
-                                                    class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" name="ship_number" required>
+                                            <label class="form-label">Número</label>
+                                            <input type="text" name="ship_number" class="form-control" required>
+                                            <div class="invalid-feedback">Informe o número.</div>
                                         </div>
 
                                         <div class="col-md-4">
-                                            <label class="form-label fw-semibold">Complemento (apto)</label>
-                                            <input type="text" class="form-control" name="ship_complement"
-                                                placeholder="Ex: Apto 12, Bloco B">
+                                            <label class="form-label">Complemento (apto)</label>
+                                            <input type="text" name="ship_complement" class="form-control">
                                         </div>
 
                                         <div class="col-md-4">
-                                            <label class="form-label fw-semibold">Bairro <span
-                                                    class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" name="ship_district" required>
+                                            <label class="form-label">Bairro</label>
+                                            <input type="text" name="ship_district" class="form-control" required>
+                                            <div class="invalid-feedback">Informe o bairro.</div>
                                         </div>
 
                                         <div class="col-md-8">
-                                            <label class="form-label fw-semibold">Cidade <span
-                                                    class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" name="ship_city" required>
+                                            <label class="form-label">Cidade</label>
+                                            <input type="text" name="ship_city" class="form-control" required>
+                                            <div class="invalid-feedback">Informe a cidade.</div>
                                         </div>
 
                                         <div class="col-md-4">
-                                            <label class="form-label fw-semibold">Estado (UF) <span
-                                                    class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" name="ship_uf" maxlength="2"
-                                                placeholder="SP" required>
+                                            <label class="form-label">UF</label>
+                                            <input type="text" name="ship_uf" class="form-control" required>
+                                            <div class="invalid-feedback">Informe a UF (2 letras).</div>
                                         </div>
                                     </div>
 
-                                    <div class="checkout-actions">
-                                        <button type="button" class="btn btn-outline-light" id="btnBack2">
-                                            Voltar
+                                    <div class="d-flex justify-content-between mt-4">
+                                        <button type="button" class="btn btn-outline-secondary" id="btnBackToStep1">
+                                            <i class="bi bi-arrow-left me-1"></i> Voltar
                                         </button>
-                                        <button type="button" class="btn btn-success" id="btnNext2">
+
+                                        <button type="button" class="btn btn-success fw-semibold" id="btnNextToStep3">
                                             Próximo <i class="bi bi-arrow-right ms-1"></i>
                                         </button>
                                     </div>
@@ -292,391 +307,409 @@
 
                                 {{-- ETAPA 3 --}}
                                 <div class="checkout-step-pane" data-pane="2">
-                                    <label class="form-label fw-semibold">Forma de Pagamento</label>
+                                    <div class="row g-3">
+                                        <div class="col-12">
+                                            <h6 class="fw-bold mb-0">Informações de pagamento</h6>
+                                            <p class="text-muted small mb-0">Escolha como deseja pagar.</p>
+                                        </div>
 
-                                    <div class="payment-options" id="paymentOptions">
-                                        <div class="payment-option is-selected" data-method="card">
-                                            <div class="form-check m-0 d-flex align-items-start gap-2">
-                                                <input class="form-check-input" type="radio" name="payment_method" value="card"
-                                                    checked>
-                                                <div class="payment-label">
-                                                    <span class="payment-icon"><i class="bi bi-credit-card"></i></span>
-                                                    <span>Cartão de Crédito</span>
+                                        {{-- Opções --}}
+                                        <div class="col-12">
+                                            <div class="payment-options">
+                                                <button type="button" class="payment-option is-active" data-method="pix">
+                                                    <i class="bi bi-qr-code me-2"></i> PIX
+                                                </button>
+                                                <button type="button" class="payment-option" data-method="card">
+                                                    <i class="bi bi-credit-card-2-front me-2"></i> Cartão
+                                                </button>
+                                                <button type="button" class="payment-option" data-method="boleto">
+                                                    <i class="bi bi-receipt me-2"></i> Boleto
+                                                </button>
+                                            </div>
+
+                                            <input type="hidden" name="payment_method" id="payment_method" value="pix">
+                                        </div>
+
+                                        {{-- PIX --}}
+                                        <div class="col-12 payment-pane is-visible" data-pane-method="pix">
+                                            <div class="alert alert-info mb-0">
+                                                <i class="bi bi-info-circle me-1"></i>
+                                                Ao finalizar, você será redirecionado para o Mercado Pago para concluir o pagamento via PIX.
+                                            </div>
+                                        </div>
+
+                                        {{-- Cartão (não será enviado se usar redirect Checkout Pro) --}}
+                                        <div class="col-12 payment-pane" data-pane-method="card">
+                                            <div class="alert alert-warning">
+                                                <i class="bi bi-shield-lock me-1"></i>
+                                                Para sua segurança, os dados do cartão não serão enviados neste modo de redirecionamento (Checkout Pro).
+                                            </div>
+
+                                            <div class="row g-3">
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Número do cartão</label>
+                                                    <input type="text" name="card_number" class="form-control" inputmode="numeric">
+                                                    <div class="invalid-feedback">Informe um número válido.</div>
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <label class="form-label">Validade</label>
+                                                    <input type="text" name="card_exp" class="form-control" placeholder="MM/AA">
+                                                    <div class="invalid-feedback">Informe a validade.</div>
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <label class="form-label">CVV</label>
+                                                    <input type="text" name="card_cvv" class="form-control" inputmode="numeric">
+                                                    <div class="invalid-feedback">Informe o CVV.</div>
+                                                </div>
+
+                                                <div class="col-md-12">
+                                                    <label class="form-label">Nome no cartão</label>
+                                                    <input type="text" name="card_name" class="form-control">
+                                                    <div class="invalid-feedback">Informe o nome do titular.</div>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div class="payment-option" data-method="boleto">
-                                            <div class="form-check m-0 d-flex align-items-start gap-2">
-                                                <input class="form-check-input" type="radio" name="payment_method"
-                                                    value="boleto">
-                                                <div class="payment-label">
-                                                    <span class="payment-icon"><i class="bi bi-receipt"></i></span>
-                                                    <span>Boleto Bancário</span>
+                                        {{-- Boleto --}}
+                                        <div class="col-12 payment-pane" data-pane-method="boleto">
+                                            <div class="alert alert-info">
+                                                <i class="bi bi-info-circle me-1"></i>
+                                                Ao finalizar, você será redirecionado para o Mercado Pago para gerar o boleto.
+                                            </div>
+
+                                            <div class="row g-3">
+                                                <div class="col-md-6">
+                                                    <label class="form-label">E-mail para receber o boleto</label>
+                                                    <input type="email" name="boleto_email" class="form-control">
+                                                    <div class="invalid-feedback">Informe um e-mail válido.</div>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div class="payment-option" data-method="pix">
-                                            <div class="form-check m-0 d-flex align-items-start gap-2">
-                                                <input class="form-check-input" type="radio" name="payment_method" value="pix">
-                                                <div class="payment-label">
-                                                    <span class="payment-icon"><i class="bi bi-qr-code"></i></span>
-                                                    <span>PIX</span>
-                                                </div>
-                                            </div>
-                                        </div>
                                     </div>
 
-                                    <div class="mt-3" id="paymentPaneCard">
-                                        <div class="row g-3">
-                                            <div class="col-12">
-                                                <label class="form-label fw-semibold">Número do Cartão <span
-                                                        class="text-danger">*</span></label>
-                                                <input type="text" class="form-control" name="card_number"
-                                                    placeholder="0000 0000 0000 0000" inputmode="numeric">
-                                            </div>
-
-                                            <div class="col-md-6">
-                                                <label class="form-label fw-semibold">Validade <span
-                                                        class="text-danger">*</span></label>
-                                                <input type="text" class="form-control" name="card_exp" placeholder="MM/AA"
-                                                    inputmode="numeric">
-                                            </div>
-
-                                            <div class="col-md-6">
-                                                <label class="form-label fw-semibold">CVV <span
-                                                        class="text-danger">*</span></label>
-                                                <input type="text" class="form-control" name="card_cvv" placeholder="123"
-                                                    inputmode="numeric" maxlength="4">
-                                            </div>
-
-                                            <div class="col-12">
-                                                <label class="form-label fw-semibold">Nome no Cartão <span
-                                                        class="text-danger">*</span></label>
-                                                <input type="text" class="form-control" name="card_name"
-                                                    placeholder="NOME COMO NO CARTÃO">
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="mt-3 d-none" id="paymentPaneBoleto">
-                                        <div class="row g-3">
-                                            <div class="col-12">
-                                                <label class="form-label fw-semibold">E-mail para envio do boleto <span
-                                                        class="text-danger">*</span></label>
-                                                <input type="email" class="form-control" name="boleto_email"
-                                                    placeholder="seuemail@exemplo.com">
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="mt-3 d-none" id="paymentPanePix">
-                                        <div class="alert alert-success mb-0">
-                                            Ao finalizar, vamos gerar o QR Code / Copia e Cola do PIX para pagamento.
-                                        </div>
-                                    </div>
-
-                                    <div class="checkout-actions">
-                                        <button type="button" class="btn btn-outline-light" id="btnBack3">
-                                            Voltar
+                                    <div class="d-flex justify-content-between mt-4">
+                                        <button type="button" class="btn btn-outline-secondary" id="btnBackToStep2">
+                                            <i class="bi bi-arrow-left me-1"></i> Voltar
                                         </button>
-                                        <button type="submit" class="btn btn-success" id="btnFinish">
+
+                                        <button type="submit" class="btn btn-success fw-semibold" id="btnFinishCheckout">
                                             Finalizar Pedido
                                         </button>
                                     </div>
                                 </div>
                             </form>
+
                         </div>
                     </div>
                 </div>
             </div>
         @endif
-
     </div>
 @endsection
 
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
             const root = document.getElementById('cartRoot');
             if (!root) return;
 
+            const cartLink = root.getAttribute('data-cart-link') || '';
+
+            const freeFrom = Number(root.getAttribute('data-free-from') || '0');
+            const shippingValue = 0;
+
             const flash = document.getElementById('cartFlash');
-            const countBadge = document.getElementById('cartCountBadge');
+            const cartCountBadge = document.getElementById('cartCountBadge');
 
             const summarySubtotal = document.getElementById('summarySubtotal');
             const summaryShipping = document.getElementById('summaryShipping');
             const summaryTotal = document.getElementById('summaryTotal');
             const summaryInstallments = document.getElementById('summaryInstallments');
 
-            const money = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+            const installments = 10;
 
-            function showFlash(type, text) {
+            function showFlash(type, msg) {
                 if (!flash) return;
                 flash.innerHTML = `
-                <div class="alert alert-${type} py-2">
-                    ${text}
-                </div>
-            `;
-                setTimeout(() => { flash.innerHTML = ''; }, 2200);
+                    <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                        ${msg}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+                    </div>
+                `;
             }
 
-            function setLoading(card, isLoading) {
-                if (!card) return;
-                card.style.opacity = isLoading ? '0.6' : '1';
-                card.style.pointerEvents = isLoading ? 'none' : 'auto';
+            function formatBRL(value) {
+                const n = Number(value || 0);
+                return n.toLocaleString('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
+                });
             }
 
-            // ✅ Atualiza o badge do carrinho no HEADER em tempo real
-            function updateNavbarCartBadge(count) {
-                const cartUrl = root.getAttribute('data-cart-link');
-                if (!cartUrl) return;
-
-                const cartLink =
-                    document.querySelector(`nav a[href="${cartUrl}"]`) ||
-                    document.querySelector(`a[href="${cartUrl}"]`);
-
-                if (!cartLink) return;
-
-                let badge = cartLink.querySelector('span.badge');
-
-                if (!count || count <= 0) {
-                    if (badge) badge.remove();
-                    return;
-                }
-
-                if (!badge) {
-                    badge = document.createElement('span');
-                    badge.className = 'position-absolute top-0 start-100 translate-middle badge d-none d-lg-inline rounded-pill bg-success';
-                    cartLink.appendChild(badge);
-                }
-
-                badge.textContent = String(count);
-            }
-
-            function ensureEmptyBox() {
-                let box = document.getElementById('cartEmptyBox');
-                if (box) return box;
-
-                box = document.createElement('div');
-                box.className = 'alert alert-warning';
-                box.id = 'cartEmptyBox';
-                box.innerHTML = `Seu carrinho está vazio. <a class="alert-link" href="{{ route('products.index') }}">Ver produtos</a>`;
-                root.appendChild(box);
-                return box;
-            }
-
-            function updateSummary(data) {
-                if (!data) return;
-
-                const count = data.count ?? 0;
-
-                if (countBadge) countBadge.textContent = `${count} item(ns)`;
-                updateNavbarCartBadge(count);
-
-                if (summarySubtotal) summarySubtotal.textContent = money.format(data.total ?? 0);
-
-                if (summaryShipping) {
-                    const isFree = !!data.isFreeShipping;
-                    summaryShipping.textContent = isFree ? 'Grátis' : money.format(data.shipping ?? 0);
-                    summaryShipping.classList.toggle('text-success', isFree);
-                }
-
-                if (summaryTotal) summaryTotal.textContent = money.format(data.finalTotal ?? 0);
-
-                if (summaryInstallments) {
-                    const inst = data.installments ?? 10;
-                    const instVal = data.installmentValue ?? 0;
-                    summaryInstallments.textContent = `ou ${inst}x de ${money.format(instVal)} sem juros`;
-                }
-
-                if (data.empty) {
-                    const cartContent = document.getElementById('cartContent');
-                    if (cartContent) cartContent.remove();
-                    ensureEmptyBox();
-                }
-            }
-
-            async function send(url, method, payload) {
-                const res = await fetch(url, {
-                    method,
-                    headers: {
-                        'X-CSRF-TOKEN': csrf,
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                    },
-                    body: payload ? JSON.stringify(payload) : null
+            function getCartTotals() {
+                let subtotal = 0;
+                document.querySelectorAll('.cart-item').forEach((card) => {
+                    const subEl = card.querySelector('.subtotal-value');
+                    const sub = Number(subEl?.getAttribute('data-subtotal') || 0);
+                    subtotal += sub;
                 });
 
-                const data = await res.json().catch(() => ({}));
+                const isFree = subtotal >= freeFrom;
+                const ship = isFree ? 0 : shippingValue;
+                const total = subtotal + ship;
+                const inst = installments > 0 ? (total / installments) : total;
+
+                return {
+                    subtotal,
+                    ship,
+                    total,
+                    inst,
+                    isFree
+                };
+            }
+
+            function updateSummaryUI() {
+                const t = getCartTotals();
+                if (summarySubtotal) summarySubtotal.textContent = formatBRL(t.subtotal);
+
+                if (summaryShipping) {
+                    summaryShipping.textContent = t.isFree ? 'Grátis' : formatBRL(t.ship);
+                    summaryShipping.classList.toggle('text-success', t.isFree);
+                }
+
+                if (summaryTotal) summaryTotal.textContent = formatBRL(t.total);
+
+                if (summaryInstallments) {
+                    summaryInstallments.textContent = `ou ${installments}x de ${formatBRL(t.inst)} sem juros`;
+                }
+            }
+
+            async function postJSON(url, payload) {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify(payload || {})
+                });
+
+                const data = await res.json().catch(() => null);
+
                 if (!res.ok) {
-                    const msg = data?.error || 'Não foi possível atualizar o carrinho.';
+                    const msg = data?.message || 'Erro inesperado.';
                     throw new Error(msg);
                 }
+
                 return data;
             }
 
-            function handleCardClick(e) {
+            function updateItemUI(card, qty, unit) {
+                const qtyEl = card.querySelector('.qty-value');
+                const unitEl = card.querySelector('.unit-value');
+                const subEl = card.querySelector('.subtotal-value');
+
+                const subtotal = (Number(qty) || 0) * (Number(unit) || 0);
+
+                if (qtyEl) qtyEl.value = qty;
+                if (unitEl) unitEl.textContent = formatBRL(unit);
+                if (subEl) {
+                    subEl.textContent = formatBRL(subtotal);
+                    subEl.setAttribute('data-subtotal', String(subtotal));
+                }
+            }
+
+            function updateCountBadge(count) {
+                if (cartCountBadge) {
+                    cartCountBadge.textContent = `${count} item(ns)`;
+                }
+            }
+
+            function removeItemCard(card) {
+                card.remove();
+
+                const cards = document.querySelectorAll('.cart-item');
+                if (cards.length === 0) {
+                    window.location.href = cartLink;
+                }
+            }
+
+            async function handleCardClick(e) {
+                const btn = e.target.closest('button');
+                if (!btn) return;
+
                 const card = e.target.closest('.cart-item');
                 if (!card) return;
+
+                const unitEl = card.querySelector('.unit-value');
+                const unit = Number(unitEl?.getAttribute('data-unit') || 0);
+
+                const qtyEl = card.querySelector('.qty-value');
+                const currentQty = Number(qtyEl?.value || 0);
 
                 const updateUrl = card.getAttribute('data-update-url');
                 const removeUrl = card.getAttribute('data-remove-url');
 
-                const btnInc = e.target.closest('.btn-inc');
-                const btnDec = e.target.closest('.btn-dec');
-                const btnRemove = e.target.closest('.btn-remove');
+                try {
+                    if (btn.classList.contains('btn-inc')) {
+                        const nextQty = currentQty + 1;
 
-                if (!btnInc && !btnDec && !btnRemove) return;
+                        const data = await postJSON(updateUrl, {
+                            qty: nextQty
+                        });
 
-                e.preventDefault();
+                        updateItemUI(card, data.qty, unit);
+                        updateCountBadge(data.count);
+                        updateSummaryUI();
+                        return;
+                    }
 
-                if (btnRemove) {
-                    setLoading(card, true);
-                    send(removeUrl, 'DELETE')
-                        .then(data => {
-                            if (data.removed) {
-                                card.remove();
-                                showFlash('success', 'Item removido do carrinho.');
-                            }
-                            updateSummary(data);
-                        })
-                        .catch(err => showFlash('danger', err.message))
-                        .finally(() => setLoading(card, false));
+                    if (btn.classList.contains('btn-dec')) {
+                        const nextQty = Math.max(1, currentQty - 1);
 
-                    return;
+                        const data = await postJSON(updateUrl, {
+                            qty: nextQty
+                        });
+
+                        updateItemUI(card, data.qty, unit);
+                        updateCountBadge(data.count);
+                        updateSummaryUI();
+                        return;
+                    }
+
+                    if (btn.classList.contains('btn-remove')) {
+                        const data = await postJSON(removeUrl, {});
+
+                        updateCountBadge(data.count);
+                        removeItemCard(card);
+                        updateSummaryUI();
+
+                        showFlash('success', 'Item removido do carrinho.');
+                        return;
+                    }
+                } catch (err) {
+                    showFlash('danger', err.message || 'Erro ao atualizar carrinho.');
                 }
-
-                const action = btnInc ? 'inc' : 'dec';
-
-                setLoading(card, true);
-                send(updateUrl, 'PATCH', { action })
-                    .then(data => {
-                        if (!data.ok) {
-                            showFlash('danger', data.error || 'Não foi possível atualizar.');
-                            return;
-                        }
-
-                        const qtyEl = card.querySelector('.qty-value');
-                        if (qtyEl && typeof data.qty !== 'undefined') qtyEl.value = data.qty;
-
-                        const subEl = card.querySelector('.subtotal-value');
-                        if (subEl && typeof data.itemSubtotal !== 'undefined') {
-                            subEl.textContent = money.format(data.itemSubtotal);
-                            subEl.setAttribute('data-subtotal', String(data.itemSubtotal));
-                        }
-
-                        updateSummary(data);
-                    })
-                    .catch(err => showFlash('danger', err.message))
-                    .finally(() => setLoading(card, false));
             }
 
-            // =============================
-            // Checkout (Modal 3 Etapas)
-            // =============================
+            // ==========================
+            // CHECKOUT MODAL: STEPPER + PAGAMENTO
+            // ==========================
             const checkoutModalEl = document.getElementById('checkoutModal');
             const checkoutForm = document.getElementById('checkoutForm');
-            const stepEls = Array.from(document.querySelectorAll('#checkoutSteps .checkout-step'));
-            const paneEls = Array.from(document.querySelectorAll('.checkout-step-pane'));
 
-            const btnNext1 = document.getElementById('btnNext1');
-            const btnNext2 = document.getElementById('btnNext2');
-            const btnBack2 = document.getElementById('btnBack2');
-            const btnBack3 = document.getElementById('btnBack3');
-            const btnFinish = document.getElementById('btnFinish');
+            const stepsEl = document.getElementById('checkoutSteps');
+            const stepEls = stepsEl ? stepsEl.querySelectorAll('.checkout-step') : [];
+            const separatorEls = stepsEl ? stepsEl.querySelectorAll('.checkout-separator') : [];
 
-            const paymentOptions = Array.from(document.querySelectorAll('#paymentOptions .payment-option'));
-            const paneCard = document.getElementById('paymentPaneCard');
-            const paneBoleto = document.getElementById('paymentPaneBoleto');
-            const panePix = document.getElementById('paymentPanePix');
+            const panes = document.querySelectorAll('.checkout-step-pane');
+
+            const btnNext1 = document.getElementById('btnNextToStep2');
+            const btnBack2 = document.getElementById('btnBackToStep1');
+            const btnNext2 = document.getElementById('btnNextToStep3');
+            const btnBack3 = document.getElementById('btnBackToStep2');
+            const btnFinish = document.getElementById('btnFinishCheckout');
+
+            const paymentMethodInput = document.getElementById('payment_method');
+            const paymentOptions = document.querySelectorAll('.payment-option');
+            const paymentPanes = document.querySelectorAll('.payment-pane');
 
             let currentStep = 0;
 
+            function setStep(i) {
+                currentStep = i;
+
+                // Steps UI
+                stepEls.forEach((el, idx) => {
+                    el.classList.toggle('is-active', idx === i);
+                    el.classList.toggle('is-done', idx < i);
+                });
+
+                separatorEls.forEach((sep, idx) => {
+                    sep.classList.toggle('is-done', idx < i);
+                });
+
+                // Panes
+                panes.forEach((pane) => {
+                    pane.classList.remove('is-visible');
+                });
+
+                const pane = document.querySelector(`.checkout-step-pane[data-pane="${i}"]`);
+                pane?.classList.add('is-visible');
+            }
+
+            function getPaymentMethod() {
+                return paymentMethodInput?.value || 'pix';
+            }
+
+            function selectPayment(method) {
+                if (!paymentMethodInput) return;
+                paymentMethodInput.value = method;
+
+                paymentOptions.forEach((opt) => {
+                    opt.classList.toggle('is-active', opt.getAttribute('data-method') === method);
+                });
+
+                syncPaymentPanes();
+            }
+
+            function syncPaymentPanes() {
+                const method = getPaymentMethod();
+                paymentPanes.forEach((pane) => {
+                    pane.classList.toggle('is-visible', pane.getAttribute('data-pane-method') === method);
+                });
+            }
+
             function onlyDigits(v) {
-                return (v || '').replace(/\D+/g, '');
+                return (v || '').replace(/\D/g, '');
             }
 
             function maskCpf(input) {
                 const v = onlyDigits(input.value).slice(0, 11);
-                const p1 = v.slice(0, 3);
-                const p2 = v.slice(3, 6);
-                const p3 = v.slice(6, 9);
-                const p4 = v.slice(9, 11);
-                let out = p1;
-                if (p2) out += '.' + p2;
-                if (p3) out += '.' + p3;
-                if (p4) out += '-' + p4;
+                let out = v;
+
+                if (v.length > 3) out = v.slice(0, 3) + '.' + v.slice(3);
+                if (v.length > 6) out = out.slice(0, 7) + '.' + v.slice(6);
+                if (v.length > 9) out = out.slice(0, 11) + '-' + v.slice(9);
+
                 input.value = out;
             }
 
             function maskPhone(input) {
                 const v = onlyDigits(input.value).slice(0, 11);
-                const ddd = v.slice(0, 2);
-                const p1 = v.slice(2, 7);
-                const p2 = v.slice(7, 11);
-                let out = '';
-                if (ddd) out += '(' + ddd + ') ';
-                out += p1;
-                if (p2) out += '-' + p2;
-                input.value = out.trim();
+                let out = v;
+
+                if (v.length >= 2) out = '(' + v.slice(0, 2) + ') ' + v.slice(2);
+                if (v.length >= 7) out = out.slice(0, 10) + '-' + out.slice(10);
+
+                input.value = out;
             }
 
             function maskCep(input) {
-                input.value = onlyDigits(input.value).slice(0, 8);
+                const v = onlyDigits(input.value).slice(0, 8);
+                let out = v;
+                if (v.length > 5) out = v.slice(0, 5) + '-' + v.slice(5);
+                input.value = out;
+            }
+
+            function markInvalid(input, invalid) {
+                if (!input) return;
+                input.classList.toggle('is-invalid', !!invalid);
             }
 
             async function viacepLookup(cep) {
                 try {
-                    const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`, { headers: { 'Accept': 'application/json' } });
+                    const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
                     const data = await res.json();
-                    if (!res.ok || data?.erro) return null;
+                    if (data?.erro) return null;
                     return data;
-                } catch {
+                } catch (e) {
                     return null;
                 }
-            }
-
-            function setStep(index) {
-                currentStep = index;
-
-                paneEls.forEach((pane) => {
-                    pane.classList.toggle('is-visible', Number(pane.getAttribute('data-pane')) === index);
-                });
-
-                stepEls.forEach((stepEl) => {
-                    const s = Number(stepEl.getAttribute('data-step'));
-                    stepEl.classList.toggle('is-active', s === index);
-                });
-            }
-
-            function getPaymentMethod() {
-                const checked = checkoutForm?.querySelector('input[name="payment_method"]:checked');
-                return checked?.value || 'card';
-            }
-
-            function syncPaymentPanes() {
-                const method = getPaymentMethod();
-                if (paneCard) paneCard.classList.toggle('d-none', method !== 'card');
-                if (paneBoleto) paneBoleto.classList.toggle('d-none', method !== 'boleto');
-                if (panePix) panePix.classList.toggle('d-none', method !== 'pix');
-            }
-
-            function selectPayment(method) {
-                paymentOptions.forEach((opt) => {
-                    const isThis = opt.getAttribute('data-method') === method;
-                    opt.classList.toggle('is-selected', isThis);
-                    const radio = opt.querySelector('input[type="radio"]');
-                    if (radio && isThis) radio.checked = true;
-                });
-                syncPaymentPanes();
-            }
-
-            function markInvalid(el, invalid) {
-                if (!el) return;
-                el.classList.toggle('is-invalid', !!invalid);
             }
 
             function validateStep0() {
@@ -834,6 +867,8 @@
                     opt.addEventListener('click', () => selectPayment(opt.getAttribute('data-method')));
                 });
 
+                syncPaymentPanes();
+
                 // ✅ Submit corrigido:
                 // - só impede submit se estiver inválido
                 // - quando válido, deixa o form enviar pro Laravel (route checkout.mercadopago)
@@ -893,8 +928,6 @@
                     // NÃO fecha o modal aqui. O redirect do backend vai acontecer.
                     // Se você fechar o modal manualmente aqui, volta o warning de aria-hidden com foco preso.
                 });
-
-                syncPaymentPanes();
             }
 
             bindCheckout();
