@@ -17,6 +17,7 @@ class CheckoutController extends Controller
 
     public function mercadoPago(Request $request): RedirectResponse
     {
+        // ✅ Validação dos names reais do seu formulário (Blade)
         $data = $request->validate([
             'buyer_name'  => ['required', 'string', 'max:150'],
             'buyer_cpf'   => ['required', 'string', 'max:20'],
@@ -34,22 +35,25 @@ class CheckoutController extends Controller
             'payment_method' => ['required', 'in:card,boleto,pix'],
         ]);
 
+        // Dados do carrinho
         [$items, $total, $count] = $this->cart->buildCartViewData($request);
 
         if (($count ?? 0) <= 0) {
             return redirect()->route('cart.index')->with('error', 'Seu carrinho está vazio.');
         }
 
-        // Itens MP
+        // Itens no formato do Mercado Pago
         $mpItems = [];
         foreach ($items as $it) {
             $p = $it['product'];
 
             $title = (string) $p->name;
+
             $variant = trim(
                 ($it['size'] ? 'Tam ' . $it['size'] : '') .
                 ($it['color'] ? ' ' . $it['color'] : '')
             );
+
             if ($variant !== '') {
                 $title .= ' (' . $variant . ')';
             }
@@ -57,7 +61,9 @@ class CheckoutController extends Controller
             $qty  = (int) ($it['qty'] ?? 0);
             $unit = (float) ($it['unit'] ?? 0);
 
-            if ($qty <= 0 || $unit <= 0) continue;
+            if ($qty <= 0 || $unit <= 0) {
+                continue;
+            }
 
             $mpItems[] = [
                 'title'       => $title,
@@ -92,6 +98,7 @@ class CheckoutController extends Controller
             'total' => (float) $total,
         ]);
 
+        // External reference (não quebra se não tiver user)
         $userId = optional($request->user())->id;
         $externalReference = 'user:' . ($userId ?? 'guest') . '|ts:' . now()->timestamp;
 
@@ -111,8 +118,52 @@ class CheckoutController extends Controller
             'external_reference' => $externalReference,
         ];
 
-        // ✅ Mercado Pago BLOQUEIA back_urls HTTP.
-        // Só inclua back_urls/auto_return quando seu APP_URL for HTTPS (ex.: ngrok / domínio).
+        /**
+         * ✅ Checkout Pro decide o que aparece.
+         * Aqui a gente só filtra de acordo com o método escolhido no modal.
+         *
+         * IMPORTANTÍSSIMO:
+         * - NÃO usar default_payment_method_id (dá 400 quando o MP considera inválido/excluído)
+         */
+        $method = $data['payment_method'];
+
+        if ($method === 'pix') {
+            // deixa só transferências (PIX quando disponível entra aqui)
+            $payload['payment_methods'] = [
+                'excluded_payment_types' => [
+                    ['id' => 'credit_card'],
+                    ['id' => 'debit_card'],
+                    ['id' => 'ticket'],
+                    ['id' => 'atm'],
+                ],
+            ];
+        } elseif ($method === 'boleto') {
+            // deixa só boleto (ticket)
+            $payload['payment_methods'] = [
+                'excluded_payment_types' => [
+                    ['id' => 'credit_card'],
+                    ['id' => 'debit_card'],
+                    ['id' => 'bank_transfer'],
+                    ['id' => 'atm'],
+                ],
+            ];
+        } else {
+            // cartão
+            $payload['payment_methods'] = [
+                'excluded_payment_types' => [
+                    ['id' => 'ticket'],
+                    ['id' => 'bank_transfer'],
+                    ['id' => 'atm'],
+                ],
+                'installments' => 10,
+            ];
+        }
+
+        /**
+         * ✅ back_urls/auto_return:
+         * MP costuma exigir HTTPS para back_urls. Em LAN/local HTTP pode invalidar.
+         * Então só envia quando APP_URL for https:// (domínio / ngrok https).
+         */
         $appUrl = (string) config('app.url');
         $isHttps = str_starts_with($appUrl, 'https://');
 
@@ -125,8 +176,26 @@ class CheckoutController extends Controller
             $payload['auto_return'] = 'approved';
         }
 
+        // Cria preferência
         $pref = $this->mp->createPreference($payload);
 
+        /**
+         * ✅ DEBUG OPCIONAL (pra destravar "uma das partes é de teste")
+         * Para usar:
+         * - adicione temporariamente no form: <input type="hidden" name="debug_mp" value="1">
+         * - ou teste com Postman
+         */
+        if ($request->boolean('debug_mp') || $request->has('debug_mp')) {
+            dd([
+                'sandbox' => config('mercadopago.sandbox'),
+                'preference_id' => $pref['id'] ?? null,
+                'collector_id'  => $pref['collector_id'] ?? null,
+                'sandbox_init_point' => $pref['sandbox_init_point'] ?? null,
+                'init_point' => $pref['init_point'] ?? null,
+            ]);
+        }
+
+        // URL para redirecionar
         $redirect = $this->mp->getRedirectUrl($pref);
 
         if (! $redirect) {
@@ -138,16 +207,22 @@ class CheckoutController extends Controller
 
     public function success(Request $request)
     {
-        return view('site.checkout.success', ['query' => $request->query()]);
+        return view('site.checkout.success', [
+            'query' => $request->query(),
+        ]);
     }
 
     public function failure(Request $request)
     {
-        return view('site.checkout.failure', ['query' => $request->query()]);
+        return view('site.checkout.failure', [
+            'query' => $request->query(),
+        ]);
     }
 
     public function pending(Request $request)
     {
-        return view('site.checkout.pending', ['query' => $request->query()]);
+        return view('site.checkout.pending', [
+            'query' => $request->query(),
+        ]);
     }
 }
