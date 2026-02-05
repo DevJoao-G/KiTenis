@@ -317,7 +317,7 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // OBS: isso é só pro carrinho/toast. Favorito confia no status do backend.
+    // OBS: isso é só pro carrinho/toast. Favorito fica 100% no JS global (home.js) para não duplicar requests.
     const isGuest = {{ auth()->check() ? 'false' : 'true' }};
     const accessUrl = "{{ url('/access') }}";
 
@@ -344,8 +344,17 @@ document.addEventListener('DOMContentLoaded', function () {
     const errorBox = document.getElementById('selectionError');
 
     function setSelected(buttons, activeButton) {
-        buttons.forEach(btn => btn.classList.remove('btn-option-selected'));
-        if (activeButton) activeButton.classList.add('btn-option-selected');
+        buttons.forEach(btn => {
+            btn.classList.remove('btn-option-selected');
+            btn.classList.remove('active');
+            btn.setAttribute('aria-pressed', 'false');
+        });
+
+        if (activeButton) {
+            activeButton.classList.add('btn-option-selected');
+            activeButton.classList.add('active');
+            activeButton.setAttribute('aria-pressed', 'true');
+        }
     }
 
     function showError(message) {
@@ -426,47 +435,6 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!c || !s) {
                 e.preventDefault();
                 showError('Selecione <strong>cor</strong> e <strong>tamanho</strong> para adicionar ao carrinho.');
-            }
-        });
-    }
-
-    // Favoritar (toggle)
-    const favBtn = document.querySelector('.btn-favoritar');
-    if (favBtn) {
-        favBtn.addEventListener('click', async () => {
-            const url = favBtn.getAttribute('data-url');
-            const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-
-            try {
-                const res = await fetch(url, {
-                    method: 'POST',
-                    credentials: 'same-origin',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': csrf || '',
-                        'Accept': 'application/json',
-                    },
-                });
-
-                if (res.status === 401 || res.status === 419) {
-                    showLoginRequiredToast();
-                    return;
-                }
-
-                const data = await res.json();
-                if (!data?.ok) return;
-
-                const isOn = !!data.favorited;
-
-                favBtn.classList.toggle('favoritado', isOn);
-
-                const icon = favBtn.querySelector('i.bi');
-                if (icon) {
-                    icon.classList.toggle('bi-heart-fill', isOn);
-                    icon.classList.toggle('bi-heart', !isOn);
-                }
-            } catch (err) {
-                console.error('Erro ao favoritar:', err);
             }
         });
     }
