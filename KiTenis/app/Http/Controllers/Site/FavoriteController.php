@@ -13,6 +13,14 @@ class FavoriteController extends Controller
     {
         $user = $request->user();
 
+        if (!$user) {
+            return response()->json([
+                'ok' => false,
+                'favorited' => false,
+                'product_id' => $product->id,
+            ], 401);
+        }
+
         $exists = $user->favoriteProducts()
             ->where('product_id', $product->id)
             ->exists();

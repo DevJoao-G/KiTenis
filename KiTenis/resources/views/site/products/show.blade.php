@@ -31,6 +31,17 @@
         color: #fff !important;
     }
 
+    /* mantém o visual mesmo com hover/focus quando selecionado */
+    .btn-option-selected:hover,
+    .btn-option-selected:focus,
+    .btn-option-selected:active,
+    .btn-option-selected:focus-visible {
+        border-color: #198754 !important;
+        background-color: #198754 !important;
+        color: #fff !important;
+        box-shadow: none !important;
+    }
+
     .btn-ghost-icon {
         width: 52px;
         min-width: 52px;
@@ -228,6 +239,7 @@
                     </li>
                 </ul>
             </form>
+
         </div>
     </div>
 
@@ -294,31 +306,25 @@
         <div id="loginRequiredToast" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="d-flex">
                 <div class="toast-body">
-                    Você precisa estar logado para adicionar itens ao carrinho. Redirecionando...
+                    Você precisa estar logado para continuar. Redirecionando...
                 </div>
                 <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Fechar"></button>
             </div>
         </div>
     </div>
 @endguest
-
 @endsection
 
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    @guest
-    const isGuest = true;
-    @else
-    const isGuest = false;
-    @endguest
-
+    // OBS: isso é só pro carrinho/toast. Favorito confia no status do backend.
+    const isGuest = {{ auth()->check() ? 'false' : 'true' }};
     const accessUrl = "{{ url('/access') }}";
 
     function showLoginRequiredToast() {
         const el = document.getElementById('loginRequiredToast');
         if (!el || typeof bootstrap === 'undefined' || !bootstrap.Toast) {
-            // Fallback simples
             window.location.assign(accessUrl);
             return;
         }
@@ -326,6 +332,7 @@ document.addEventListener('DOMContentLoaded', function () {
         toast.show();
         setTimeout(() => window.location.assign(accessUrl), 900);
     }
+
     const colorButtons = document.querySelectorAll('.color-options button[data-color]');
     const sizeButtons  = document.querySelectorAll('.size-options button[data-size]');
 
@@ -352,12 +359,12 @@ document.addEventListener('DOMContentLoaded', function () {
         errorBox.innerHTML = '';
     }
 
-    // Estado inicial (old())
     if (colorInput && colorInput.value) {
         const btn = Array.from(colorButtons).find(b => b.getAttribute('data-color') === colorInput.value);
         if (btn) setSelected(colorButtons, btn);
         if (colorLabel) colorLabel.textContent = colorInput.value;
     }
+
     if (sizeInput && sizeInput.value) {
         const btn = Array.from(sizeButtons).find(b => b.getAttribute('data-size') === sizeInput.value);
         if (btn) setSelected(sizeButtons, btn);
@@ -384,7 +391,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Quantidade
     const qtyMinus = document.getElementById('qtyMinus');
     const qtyPlus  = document.getElementById('qtyPlus');
     const qtyInput = document.getElementById('qtyInput');
@@ -404,7 +410,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Validação antes de enviar
     const form = document.getElementById('addToCartForm');
     if (form) {
         form.addEventListener('submit', (e) => {
@@ -414,12 +419,51 @@ document.addEventListener('DOMContentLoaded', function () {
                 showLoginRequiredToast();
                 return;
             }
+
             const c = (colorInput?.value || '').trim();
             const s = (sizeInput?.value || '').trim();
 
             if (!c || !s) {
                 e.preventDefault();
                 showError('Selecione <strong>cor</strong> e <strong>tamanho</strong> para adicionar ao carrinho.');
+            }
+        });
+    }
+
+    // Favoritar (toggle)
+    const favBtn = document.querySelector('.btn-favoritar');
+    if (favBtn) {
+        favBtn.addEventListener('click', async () => {
+            const url = favBtn.getAttribute('data-url');
+            const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': csrf || '',
+                        'Accept': 'application/json',
+                    },
+                });
+
+                if (res.status === 401 || res.status === 419) {
+                    showLoginRequiredToast();
+                    return;
+                }
+
+                const data = await res.json();
+                if (!data?.ok) return;
+
+                const isOn = !!data.favorited;
+
+                const icon = favBtn.querySelector('i.bi');
+                if (icon) {
+                    icon.classList.toggle('bi-heart-fill', isOn);
+                    icon.classList.toggle('bi-heart', !isOn);
+                }
+            } catch (err) {
+                console.error('Erro ao favoritar:', err);
             }
         });
     }

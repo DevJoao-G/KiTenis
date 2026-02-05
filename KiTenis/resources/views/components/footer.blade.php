@@ -1,5 +1,5 @@
 {{-- resources/views/components/footer.blade.php --}}
-<footer class="footer bg-dark text-white py-4">
+<footer class="footer bg-dark text-white py-4 mt-auto w-100">
     <div class="container">
         <div class="row">
             <div class="col-md-4 mb-3 mb-md-0">
