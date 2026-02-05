@@ -21,7 +21,10 @@
     <!-- Navbar -->
     <x-navbar />
 
-    <!-- Alerts -->
+    <!-- Toasts -->
+    <div id="appToastContainer" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 2000;"></div>
+
+    <!-- Flash Messages (Toast) -->
     @if (session('success'))
         <x-alert type="success" :message="session('success')" />
     @endif
