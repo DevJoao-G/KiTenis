@@ -5,98 +5,69 @@
 
 
 
+
+
 /* Adicionar ao resources/css/app.css existente */
 
 /* Font Bungee melhorada */
 .font-bungee {
-    font-family: 'Bungee Shade', cursive !important;
-    letter-spacing: 1px;
+    font-family: 'Bungee Shade', cursive;
 }
 
-/* Dropdown escuro melhorado */
-.dropdown-dark {
-    background-color: #212529;
-    border: 1px solid #2b3035;
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.3);
+/* Navbar principal */
+.navbar {
+    padding: 1rem 0;
 }
 
-.dropdown-dark .dropdown-item,
-.dropdown-dark .dropdown-user-name {
-    color: #f8f9fa;
-    transition: all 0.3s ease;
+/* Hover nos dropdowns */
+.dropdown-menu .dropdown-item:hover {
+    background-color: #198754 !important;
+    color: #fff !important;
 }
 
-.dropdown-dark .dropdown-divider {
-    border-color: #343a40;
+/* Admin com bg-success */
+.admin-bg-success {
+    background-color: #198754 !important;
+    color: #fff !important;
 }
 
-.dropdown-dark .dropdown-item:hover,
-.dropdown-dark .dropdown-item:focus {
-    background-color: #198754;
-    color: #fff;
-    transform: translateX(5px);
-}
-
-.dropdown-dark button.dropdown-item {
-    background: none;
-    border: none;
-    width: 100%;
-    text-align: left;
-}
-
-/* Admin e Ofertas */
-.dropdown-dark .dropdown-admin,
-.dropdown-dark .dropdown-offer {
-    color: #198754;
-}
-
-.dropdown-dark .dropdown-admin:hover,
-.dropdown-dark .dropdown-admin:focus,
-.dropdown-dark .dropdown-admin:active,
-.dropdown-dark .dropdown-offer:hover,
-.dropdown-dark .dropdown-offer:focus,
-.dropdown-dark .dropdown-offer:active {
+/* Footer */
+footer {
     background-color: #198754;
     color: #fff;
 }
 
-/* Badge do carrinho com animação */
-.nav-link .badge {
-    animation: pulse 2s infinite;
+/* Ajustes gerais */
+.btn-success {
+    transition: all 0.2s ease;
 }
 
-@keyframes pulse {
-    0%, 100% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.1);
-    }
+.btn-success:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0.5rem 1rem rgba(25, 135, 84, 0.2);
 }
 
-/* Navbar shadow suave */
-.navbar.shadow {
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
+/* ===== Favoritar (UI) ===== */
+/* base */
+.btn-favoritar{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    line-height:1;
 }
-
-
-/* Mantém o estilo quando cor/tamanho estiver selecionado */
-.btn-option-selected,
-.btn-option-selected:hover,
-.btn-option-selected:focus,
-.btn-option-selected:active,
-.btn-option-selected:focus-visible {
-  background-color: var(--bs-success) !important;
-  border-color: var(--bs-success) !important;
-  color: #fff !important;
-  box-shadow: none !important;
+/* tamanho grande (página produto) */
+.btn-favoritar.btn-favoritar-lg{
+    width:56px;
+    height:56px;
+    min-width:56px;
+    border-radius:.9rem;
+    flex:0 0 auto;
 }
-
-/* Se você usa btn-outline-* nas opções, força o outline a respeitar o selecionado */
-.btn.btn-outline-dark.btn-option-selected,
-.btn.btn-outline-secondary.btn-option-selected,
-.btn.btn-outline-success.btn-option-selected {
-  background-color: var(--bs-success) !important;
-  border-color: var(--bs-success) !important;
-  color: #fff !important;
+.btn-favoritar i{
+    font-size:1.25rem;
+    line-height:1;
+}
+/* ✅ estado favoritado: coração vermelho preenchido (como antes) */
+.btn-favoritar.favoritado i{
+    color: var(--bs-danger) !important;
 }

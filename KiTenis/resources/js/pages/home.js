@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (icon) {
             icon.classList.toggle('bi-heart', !favorited);
             icon.classList.toggle('bi-heart-fill', favorited);
+            icon.classList.toggle('text-danger', favorited);
         }
     }
 
@@ -48,13 +49,6 @@ document.addEventListener('DOMContentLoaded', function () {
         botao.addEventListener('click', async function (e) {
             e.preventDefault();
             e.stopPropagation();
-
-            const isAuth = !!(window.KITENIS && window.KITENIS.auth);
-
-            if (!isAuth) {
-                showToast('Você precisa estar logado para favoritar produtos.', 'warning');
-                return;
-            }
 
             const url = this.getAttribute('data-url');
             if (!url) {
@@ -71,13 +65,15 @@ document.addEventListener('DOMContentLoaded', function () {
             try {
                 const res = await fetch(url, {
                     method: 'POST',
+                    credentials: 'same-origin',
                     headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
                         'Accept': 'application/json',
                         'X-CSRF-TOKEN': csrf ?? '',
                     },
                 });
 
-                if (res.status === 401) {
+                if (res.status === 401 || res.status === 419) {
                     setButtonState(this, wasFavorited);
                     showToast('Faça login para favoritar produtos.', 'warning');
                     return;
@@ -90,8 +86,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
 
                 const data = await res.json();
-                setButtonState(this, !!data.favorited);
 
+                if (!data?.ok) {
+                    setButtonState(this, wasFavorited);
+                    showToast('Erro ao salvar favorito. Tente novamente.', 'danger');
+                    return;
+                }
+
+                setButtonState(this, !!data.favorited);
                 showToast(data.favorited ? 'Adicionado aos favoritos!' : 'Removido dos favoritos!', 'success');
             } catch (err) {
                 setButtonState(this, wasFavorited);

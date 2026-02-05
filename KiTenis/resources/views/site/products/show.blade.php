@@ -215,7 +215,7 @@
 
                     <button
                         type="button"
-                        class="btn btn-outline-secondary btn-lg btn-ghost-icon btn-favoritar {{ ($isFavorited ?? false) ? 'favoritado' : '' }}"
+                        class="btn btn-outline-secondary btn-lg btn-ghost-icon btn-favoritar flex-shrink-0 {{ ($isFavorited ?? false) ? 'favoritado' : '' }}"
                         data-url="{{ route('favorites.toggle', $product) }}"
                         aria-label="Favoritar {{ $product->name }}"
                         title="Favoritar produto"
@@ -239,7 +239,6 @@
                     </li>
                 </ul>
             </form>
-
         </div>
     </div>
 
@@ -359,12 +358,12 @@ document.addEventListener('DOMContentLoaded', function () {
         errorBox.innerHTML = '';
     }
 
+    // Estado inicial (old())
     if (colorInput && colorInput.value) {
         const btn = Array.from(colorButtons).find(b => b.getAttribute('data-color') === colorInput.value);
         if (btn) setSelected(colorButtons, btn);
         if (colorLabel) colorLabel.textContent = colorInput.value;
     }
-
     if (sizeInput && sizeInput.value) {
         const btn = Array.from(sizeButtons).find(b => b.getAttribute('data-size') === sizeInput.value);
         if (btn) setSelected(sizeButtons, btn);
@@ -391,6 +390,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    // Quantidade
     const qtyMinus = document.getElementById('qtyMinus');
     const qtyPlus  = document.getElementById('qtyPlus');
     const qtyInput = document.getElementById('qtyInput');
@@ -410,6 +410,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // Validação antes de enviar
     const form = document.getElementById('addToCartForm');
     if (form) {
         form.addEventListener('submit', (e) => {
@@ -419,7 +420,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 showLoginRequiredToast();
                 return;
             }
-
             const c = (colorInput?.value || '').trim();
             const s = (sizeInput?.value || '').trim();
 
@@ -440,6 +440,7 @@ document.addEventListener('DOMContentLoaded', function () {
             try {
                 const res = await fetch(url, {
                     method: 'POST',
+                    credentials: 'same-origin',
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
                         'X-CSRF-TOKEN': csrf || '',
@@ -456,6 +457,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (!data?.ok) return;
 
                 const isOn = !!data.favorited;
+
+                favBtn.classList.toggle('favoritado', isOn);
 
                 const icon = favBtn.querySelector('i.bi');
                 if (icon) {
