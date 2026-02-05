@@ -13,6 +13,7 @@
    (Set duplicado no HTML para loop perfeito)
 */
 .ofertas-marquee {
+    
     overflow: hidden;
     -webkit-mask-image: linear-gradient(to right, transparent, #000 3% 97%, transparent);
     mask-image: linear-gradient(to right, transparent, #000 3% 97%, transparent);

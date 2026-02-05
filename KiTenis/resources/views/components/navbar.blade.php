@@ -60,7 +60,7 @@
                         </li>
 
                         <li>
-                            <a class="dropdown-item fw-bold {{ request()->routeIs('products.ofertas') ? 'bg-success text-white' : '' }}"
+                            <a class="dropdown-item fw-bold dropdown-ofertas {{ request()->routeIs('products.ofertas') ? 'bg-success text-white' : '' }}"
                                 href="{{ route('products.ofertas') }}">
                                 Ofertas
                             </a>
@@ -85,21 +85,17 @@
                 @auth
                     <!-- Carrinho -->
                     @php
-                        $cartCount = collect(session('cart', []))->sum(fn ($i) => (int) ($i['qty'] ?? 1));
+                        $cartCount = collect(session('cart', []))->sum('quantity');
                     @endphp
 
-                    <li class="nav-item">
-                        <a class="nav-link position-relative d-inline-flex align-items-center"
-                            href="{{ route('cart.index') }}">
-                            <i class="bi bi-handbag fs-5"></i>
+                    <li class="nav-item me-2">
+                        <a href="{{ route('cart.index') }}" class="nav-link position-relative d-flex align-items-center">
+                            <i class="bi bi-cart3 fs-5"></i>
 
-                            @if($cartCount > 0)
-                                <span
-                                    class="position-absolute top-0 start-100 translate-middle badge d-none d-lg-inline rounded-pill bg-success">
-                                    {{ $cartCount }}
-                                    <span class="visually-hidden">itens no carrinho</span>
-                                </span>
-                            @endif
+                            <span class="badge bg-success position-absolute top-0 start-100 translate-middle"
+                                id="cartCountBadge" style="font-size: .7rem;">
+                                {{ $cartCount ?? 0 }}
+                            </span>
                         </a>
                     </li>
 
@@ -135,7 +131,7 @@
                                     <hr class="dropdown-divider">
                                 </li>
                                 <li>
-                                    <a class="dropdown-item fw-bold dropdown-admin"
+                                    <a class="dropdown-item fw-bold dropdown-admin dropdown-inverse"
                                         href="{{ route('filament.admin.pages.dashboard') }}">
                                         <i class="bi bi-shield-lock me-2"></i>Painel Admin
                                     </a>
