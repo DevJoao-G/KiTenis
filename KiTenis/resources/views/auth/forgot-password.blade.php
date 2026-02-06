@@ -47,7 +47,7 @@
                         </form>
 
                         <div class="text-center mt-4">
-                            <a href="{{ route('login') }}" class="text-decoration-none text-success fw-semibold">
+                            <a href="{{ route('access') }}" class="text-decoration-none text-success fw-semibold">
                                 Voltar para o login
                             </a>
                         </div>

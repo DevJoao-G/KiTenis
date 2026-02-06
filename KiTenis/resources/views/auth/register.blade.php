@@ -95,7 +95,7 @@
 
         <!-- Actions -->
         <div class="d-flex justify-content-between align-items-center mt-4">
-            <a href="{{ route('login') }}" class="small text-decoration-none">
+            <a href="{{ route('access') }}" class="small text-decoration-none">
                 Já possui conta?
             </a>
 
