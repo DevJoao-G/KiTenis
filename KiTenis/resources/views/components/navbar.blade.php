@@ -66,7 +66,6 @@
                             </a>
                         </li>
                     </ul>
-
                 </li>
             </ul>
 
@@ -85,14 +84,18 @@
                 @auth
                     <!-- Carrinho -->
                     @php
-                        $cartCount = collect(session('cart', []))->sum('quantity');
+                        // Correção: no seu carrinho a quantidade está como "qty" (não "quantity")
+                        // Mantive fallback caso alguma parte do projeto use "quantity".
+                        $cart = session('cart', []);
+                        $cartCount = collect($cart)->sum(fn($item) => (int)($item['qty'] ?? $item['quantity'] ?? 0));
                     @endphp
 
                     <li class="nav-item me-2">
                         <a href="{{ route('cart.index') }}" class="nav-link position-relative d-flex align-items-center">
                             <i class="bi bi-cart3 fs-5"></i>
 
-                            <span class="badge bg-success position-absolute top-0 start-100 translate-middle"
+                            {{-- contador visível apenas no desktop (lg+) --}}
+                            <span class="badge bg-success position-absolute top-0 start-100 translate-middle d-none d-lg-inline-block"
                                 id="cartCountBadge" style="font-size: .7rem;">
                                 {{ $cartCount ?? 0 }}
                             </span>
@@ -126,7 +129,7 @@
                                 </a>
                             </li>
 
-                            @if(Auth::user()->is_admin)
+                            @if (Auth::user()->is_admin)
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>

@@ -65,7 +65,7 @@ main{
 .dropdown-dark .dropdown-item.dropdown-inverse:hover,
 .dropdown-dark .dropdown-item.dropdown-inverse:focus{
     background-color:#198754 !important; /* mantém success */
-    color:#000 !important;               /* branco -> preto */
+    color:#212529 !important;               /* branco -> preto */
 }
 
 /* ✅ Hover SOMENTE no toggle do dropdown (remove o hover global do navbar) */
